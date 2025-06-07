@@ -13,12 +13,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(app src/main.cpp)
 
 # linking with libs
-#set(LIBS_ROOT ${CMAKE_BINARY_DIR}/libs)
-#set(GSM_CRYPTO ${LIBS_ROOT}/crypto/gsm_crypto)
-#set(GSM_CRYPTO ${LIBS_ROOT}/crypto/gsm_crypto.lib)
-set(GSM_CRYPTO gsm_crypto)
-#target_link_libraries(${PROJECT_NAME} PRIVATE ${GSM_CRYPTO})
-target_link_libraries(app PRIVATE ${GSM_CRYPTO})
+target_link_libraries(app PRIVATE gsm_crypto)
+target_link_libraries(app PRIVATE io_utils)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    inc/
+)
 
 #target_include_directories(${PROJECT_NAME} PRIVATE
 #    ${CMAKE_SOURCE_DIR}/libs/crypto/inc

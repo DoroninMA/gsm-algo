@@ -20,7 +20,7 @@
 
 #include <stdint.h>
 
-#include <utils/bits.h>
+#include <crypto/utils/bits.h>
 
 /*! \addtogroup bits
  *  @{
