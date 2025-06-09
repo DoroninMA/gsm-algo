@@ -19,8 +19,8 @@
  */
 
 #include <stdint.h>
-#include <crypto/kasumi.h>
-#include <crypto/utils/bits.h>
+#include <GsmCrypto/kasumi.h>
+#include <GsmCrypto/utils/bits.h>
 
 /* See TS 135 202 for constants and full Kasumi spec. */
 inline static uint16_t kasumi_FI(uint16_t I, uint16_t skey)

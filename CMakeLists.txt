@@ -8,16 +8,21 @@ endif()
 project ("gsm-algo")
 
 set(IO_UTILS_PROJECT "${PROJECT_SOURCE_DIR}/libs/IOUtils")
-set(CRYPTO_PROJECT "${PROJECT_SOURCE_DIR}/libs/crypto")
+set(GSM_CRYPTO_PROJECT "${PROJECT_SOURCE_DIR}/libs/GsmCrypto")
+set(DATA_GEN_PROJECT "${PROJECT_SOURCE_DIR}/libs/DataGen")
 set(APP_PROJECT "${PROJECT_SOURCE_DIR}/app")
 
-add_subdirectory ("${CRYPTO_PROJECT}")
+add_subdirectory ("${GSM_CRYPTO_PROJECT}")
 add_subdirectory ("${IO_UTILS_PROJECT}")
+add_subdirectory ("${DATA_GEN_PROJECT}")
 add_subdirectory ("${APP_PROJECT}")
 
-file(COPY "${CMAKE_BINARY_DIR}/libs/crypto/gsm_crypto.dll"
+
+file(COPY "${CMAKE_BINARY_DIR}/libs/GsmCrypto/gsm_crypto.dll"
         DESTINATION "${CMAKE_BINARY_DIR}/app/")
 
 file(COPY "${CMAKE_BINARY_DIR}/libs/IOUtils/io_utils.dll"
         DESTINATION "${CMAKE_BINARY_DIR}/app/")
 
+file(COPY "${CMAKE_BINARY_DIR}/libs/DataGen/data_gen.dll"
+        DESTINATION "${CMAKE_BINARY_DIR}/app/")

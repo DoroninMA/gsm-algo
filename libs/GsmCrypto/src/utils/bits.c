@@ -20,7 +20,7 @@
 
 #include <stdint.h>
 
-#include <crypto/utils/bits.h>
+#include <GsmCrypto/utils/bits.h>
 
 /*! \addtogroup bits
  *  @{

@@ -1,4 +1,7 @@
-﻿#include <iostream>
+﻿#ifndef _IO_UTILS_CSV_WRITER
+#define _IO_UTILS_CSV_WRITER
+
+#include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -19,3 +22,5 @@ public:
 private:
     std::string _separator = "\n";
 };
+
+#endif

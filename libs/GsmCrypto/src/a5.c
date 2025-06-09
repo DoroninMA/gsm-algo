@@ -31,9 +31,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include <crypto/a5.h>
-#include <crypto/kasumi.h>
-#include <crypto/utils/bits.h>
+#include <GsmCrypto/a5.h>
+#include <GsmCrypto/kasumi.h>
+#include <GsmCrypto/utils/bits.h>
 
 /* ------------------------------------------------------------------------ */
 /* A5/3&4                                                                   */

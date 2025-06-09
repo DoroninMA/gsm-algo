@@ -1,3 +1,6 @@
+#ifndef _IO_UTILS_FILE_WRITER
+#define _IO_UTILS_FILE_WRITER
+
 #include <string>
 #include <fstream>
 
@@ -18,3 +21,5 @@ private:
     std::ofstream _file;
     bool _isOpened = false;
 };
+
+#endif
