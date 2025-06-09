@@ -10,11 +10,6 @@ public:
     Comp1281GenStrategy();
     ~Comp1281GenStrategy() = default;
     std::vector<uint8_t> generateNext() override;
-    
-private:
-    std::vector<uint8_t> _output;
-    //std::vector<uint8_t> _kc;
-    //std::vector<uint8_t> _sres;
 };
 
 #endif

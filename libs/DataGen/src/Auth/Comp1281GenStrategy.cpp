@@ -5,14 +5,8 @@ extern "C"
     #include "GsmCrypto/comp128.h"
 }
 
-static const size_t SRES_BYTES = 4;
-static const size_t KC_BYTES   = 8;
-
-Comp1281GenStrategy::Comp1281GenStrategy()
+Comp1281GenStrategy::Comp1281GenStrategy() : AuthDataGenStrategy()
 {
-    //_kc.resize(KC_BYTES);
-    //_sres.resize(SRES_BYTES);
-    _output.resize(SRES_BYTES + KC_BYTES);
 }
 
 std::vector<uint8_t> Comp1281GenStrategy::generateNext()

@@ -13,6 +13,14 @@ public:
     void setKi(const std::vector<uint8_t>& ki);
     void setRand(const std::vector<uint8_t>& rand);
 
+protected:
+    AuthDataGenStrategy();
+
+    static const size_t SRES_BYTES;
+    static const size_t KC_BYTES;
+
+    std::vector<uint8_t> _output;
+
 private:
     std::vector<uint8_t> _ki;
     std::vector<uint8_t> _rand;

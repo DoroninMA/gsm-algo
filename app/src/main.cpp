@@ -16,5 +16,8 @@ int main(int argc, char* argv[])
 
     generator.generate(1000);
 
+    fileWriter.close();
+    csvWriter.close();
+
     return 0;
 }
