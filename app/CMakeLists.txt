@@ -16,6 +16,7 @@ add_executable(app src/main.cpp)
 target_link_libraries(app PRIVATE gsm_crypto)
 target_link_libraries(app PRIVATE io_utils)
 target_link_libraries(app PRIVATE data_gen)
+target_link_libraries(app PRIVATE statistics)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     inc/
