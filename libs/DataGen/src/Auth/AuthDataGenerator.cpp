@@ -87,7 +87,7 @@ void AuthDataGenerator::_setRand(const std::vector<uint8_t>& rand)
 
 void AuthDataGenerator::_writeGenResult(const std::string& genResult)
 {
-    if ((_pCsvWriter != nullptr) && _pCsvWriter->isOpened())
+    if ((_pCsvWriter != nullptr) && _pCsvWriter->isOpen())
     {
         std::string kiHexString = bytesToHexString(_ki.data(), _ki.size());
         std::string randHexString = bytesToHexString(_rand.data(), _rand.size());
@@ -99,7 +99,7 @@ void AuthDataGenerator::_writeGenResult(const std::string& genResult)
         );
     }
 
-    if ((_pFileWriter != nullptr) && _pFileWriter->isOpened())
+    if ((_pFileWriter != nullptr) && _pFileWriter->isOpen())
     {
         _pFileWriter->write(genResult + "\n");
     }
@@ -107,7 +107,7 @@ void AuthDataGenerator::_writeGenResult(const std::string& genResult)
 
 void AuthDataGenerator::_writeGenResult(const std::vector<uint8_t>& genResult)
 {
-    if ((_pCsvWriter != nullptr) && _pCsvWriter->isOpened())
+    if ((_pCsvWriter != nullptr) && _pCsvWriter->isOpen())
     {
         std::string kiHexString = 
             bytesToHexString(_ki.data(), _ki.size());
@@ -126,7 +126,7 @@ void AuthDataGenerator::_writeGenResult(const std::vector<uint8_t>& genResult)
         std::cout << kiHexString << " " << randHexString << " " << genResultHexString << "\n";
     }
 
-    if ((_pFileWriter != nullptr) && _pFileWriter->isOpened())
+    if ((_pFileWriter != nullptr) && _pFileWriter->isOpen())
     {
         std::string bitGenResultString = 
             bytesToBitString(genResult.data(), genResult.size());

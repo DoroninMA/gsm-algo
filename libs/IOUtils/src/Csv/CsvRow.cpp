@@ -1,11 +1,13 @@
 #include "IOUtils/Csv/CsvRow.h"
 
-CsvRow::CsvRow()
+CsvRow::CsvRow(const std::string& column)
 {
+    addColumn(column);
 }
 
-CsvRow::~CsvRow()
+CsvRow::CsvRow(const std::vector<std::string>& columns)
 {
+    addColumns(columns);
 }
 
 size_t CsvRow::ColumnCount() const
@@ -65,5 +67,15 @@ CsvRow& CsvRow::addColumn(const std::string& value)
     }
 
     _columns.push_back(escaped);
+    return *this;
+}
+
+CsvRow& CsvRow::addColumns(const std::vector<std::string>& columns)
+{
+    for (const std::string& column : columns)
+    {
+        addColumn(column);
+    }
+
     return *this;
 }

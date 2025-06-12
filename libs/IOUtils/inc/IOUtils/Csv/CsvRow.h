@@ -9,8 +9,10 @@
 class CsvRow
 {
 public:
-    CsvRow();
-    ~CsvRow();
+    CsvRow() = default;
+    CsvRow(const std::string& column);
+    CsvRow(const std::vector<std::string>& columns);
+    ~CsvRow() = default;
 
     size_t ColumnCount() const;
 
@@ -19,6 +21,7 @@ public:
 
     void clear();
     CsvRow& addColumn(const std::string& value);
+    CsvRow& addColumns(const std::vector<std::string>& columns);
 
 private:
     std::vector<std::string> _columns;

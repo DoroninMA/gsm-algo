@@ -14,7 +14,6 @@ class CsvWriter : public FileWriter
 {
 public:
     CsvWriter();
-    ~CsvWriter();
 
     bool writeRow(const CsvRow& row);
     bool writeRows(const std::vector<CsvRow>& rows);

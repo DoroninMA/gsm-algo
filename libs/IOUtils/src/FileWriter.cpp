@@ -1,9 +1,5 @@
 #include "IOUtils/FileWriter.h"
 
-FileWriter::FileWriter()
-{
-}
-
 FileWriter::~FileWriter()
 {
     if (_isOpened)
@@ -12,7 +8,7 @@ FileWriter::~FileWriter()
     }
 }
 
-bool FileWriter::isOpened() const
+bool FileWriter::isOpen() const
 {
     return _isOpened;
 }

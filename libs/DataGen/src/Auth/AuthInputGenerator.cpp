@@ -66,7 +66,7 @@ void AuthInputGenerator::generate(size_t count)
 
 void AuthInputGenerator::_writeGenResult(const KeyString& ki, const KeyString& rand)
 {
-    if ((_pCsvWriter != nullptr) && _pCsvWriter->isOpened())
+    if ((_pCsvWriter != nullptr) && _pCsvWriter->isOpen())
     {
         std::string kiHexString = bytesToHexString(ki.data(), ki.size());
         std::string randHexString = bytesToHexString(rand.data(), rand.size());

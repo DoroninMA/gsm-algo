@@ -7,10 +7,9 @@
 class FileWriter
 {
 public:
-    FileWriter();
     ~FileWriter();
 
-    bool isOpened() const;
+    bool isOpen() const;
 
     bool open(const std::string& filename, bool append = false);
     void close();

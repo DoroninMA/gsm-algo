@@ -2,10 +2,6 @@
 
 CsvWriter::CsvWriter() : FileWriter() {}
 
-CsvWriter::~CsvWriter()
-{
-}
-
 bool CsvWriter::writeRow(const CsvRow& row)
 {
     return write(row.toString() + _separator);
@@ -13,7 +9,7 @@ bool CsvWriter::writeRow(const CsvRow& row)
 
 bool CsvWriter::writeRows(const std::vector<CsvRow>& rows)
 {
-    if (!isOpened())
+    if (!isOpen())
     {
         return false;
     }
