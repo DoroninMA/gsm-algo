@@ -6,14 +6,25 @@ AvalancheTester::AvalancheTester(std::function<std::vector<uint8_t>(const std::v
 {
 }
 
-double AvalancheTester::getResult() const
+size_t AvalancheTester::totalChangedBits() const
+{
+    return _totalChangedBits;
+}
+size_t AvalancheTester::totalFlips() const
+{
+    return _totalFlips;
+}
+
+double AvalancheTester::average() const
 {
     double average = static_cast<double>(_totalChangedBits) / _totalFlips;
     return average;
 }
 
-void AvalancheTester::addData(const std::vector<uint8_t>& input)
+void AvalancheTester::test(const std::vector<uint8_t>& input)
 {
+    _resetTotals();
+
     std::vector<uint8_t> baseOutput = func(input);
     for (size_t bitPos = 0; bitPos < baseOutput.size() * sizeof(uint8_t); ++bitPos)
     {
@@ -65,4 +76,10 @@ size_t AvalancheTester::_hammingDistance(uint8_t a, uint8_t b)
         xorVal >>= 1;
     }
     return distance;
+}
+
+void AvalancheTester::_resetTotals()
+{
+    _totalChangedBits = 0;
+    _totalFlips = 0;
 }

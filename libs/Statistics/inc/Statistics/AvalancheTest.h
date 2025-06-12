@@ -9,8 +9,11 @@ class AvalancheTester
 public:
     AvalancheTester(std::function<std::vector<uint8_t>(const std::vector<uint8_t>&)> func);
 
-    double getResult() const;
-    void addData(const std::vector<uint8_t>& input);
+    size_t totalChangedBits() const;
+    size_t totalFlips() const;
+    double average() const;
+    
+    void test(const std::vector<uint8_t>& input);
 
 private:
     std::function<std::vector<uint8_t>(const std::vector<uint8_t>&)> func;
@@ -20,6 +23,8 @@ private:
     std::vector<uint8_t> _flipBitData(const std::vector<uint8_t>& data, size_t bitPos);
     size_t _hammingDistance(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b);
     size_t _hammingDistance(uint8_t a, uint8_t b);
+    
+    void _resetTotals();
 };
 
 #endif
