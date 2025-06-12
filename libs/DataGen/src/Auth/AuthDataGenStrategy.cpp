@@ -23,7 +23,17 @@ void AuthDataGenStrategy::setKi(const std::vector<uint8_t>& ki)
     _ki = ki;
 }
 
+void AuthDataGenStrategy::setKi(std::vector<uint8_t>&& ki)
+{
+    _ki = std::move(ki);
+}
+
 void AuthDataGenStrategy::setRand(const std::vector<uint8_t>& rand)
 {
     _rand = rand;
+}
+
+void AuthDataGenStrategy::setRand(std::vector<uint8_t>&& rand)
+{
+    _rand = std::move(rand);
 }

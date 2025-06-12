@@ -26,7 +26,7 @@ void AvalancheTester::test(const std::vector<uint8_t>& input)
     _resetTotals();
 
     std::vector<uint8_t> baseOutput = func(input);
-    for (size_t bitPos = 0; bitPos < baseOutput.size() * sizeof(uint8_t); ++bitPos)
+    for (size_t bitPos = 0; bitPos < baseOutput.size() * 8; ++bitPos)
     {
         std::vector<uint8_t> modifiedInput = _flipBitData(input, bitPos);
         std::vector<uint8_t> modifiedOutput = func(modifiedInput);

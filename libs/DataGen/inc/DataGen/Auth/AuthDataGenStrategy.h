@@ -10,8 +10,12 @@ public:
     const std::vector<uint8_t>& getRand() const;
 
     virtual std::vector<uint8_t> generateNext() = 0;
+    
     void setKi(const std::vector<uint8_t>& ki);
+    void setKi(std::vector<uint8_t>&& ki);
+
     void setRand(const std::vector<uint8_t>& rand);
+    void setRand(std::vector<uint8_t>&& rand);
 
 protected:
     AuthDataGenStrategy();

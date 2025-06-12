@@ -10,7 +10,7 @@ CsvRow::CsvRow(const std::vector<std::string>& columns)
     addColumns(columns);
 }
 
-size_t CsvRow::ColumnCount() const
+size_t CsvRow::columnCount() const
 {
     return _columns.size();
 }

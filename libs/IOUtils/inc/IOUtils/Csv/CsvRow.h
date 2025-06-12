@@ -14,7 +14,7 @@ public:
     CsvRow(const std::vector<std::string>& columns);
     ~CsvRow() = default;
 
-    size_t ColumnCount() const;
+    size_t columnCount() const;
 
     const std::string& getColumn(size_t index) const;
     std::string toString() const;
