@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.28)
 
 if (POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
@@ -20,15 +20,31 @@ add_subdirectory ("${STATISTICS_PROJECT}")
 add_subdirectory ("${APP_PROJECT}")
 
 
+target_link_libraries(app
+    PRIVATE
+    gsm_crypto
+    io_utils
+    data_gen
+    statistics
+)
 
-file(COPY "${CMAKE_BINARY_DIR}/libs/GsmCrypto/gsm_crypto.dll"
-        DESTINATION "${CMAKE_BINARY_DIR}/app/")
 
-file(COPY "${CMAKE_BINARY_DIR}/libs/IOUtils/io_utils.dll"
-        DESTINATION "${CMAKE_BINARY_DIR}/app/")
+set_target_properties(app PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
+)
 
-file(COPY "${CMAKE_BINARY_DIR}/libs/DataGen/data_gen.dll"
-        DESTINATION "${CMAKE_BINARY_DIR}/app/")
+set_target_properties(gsm_crypto PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
+)
 
-file(COPY "${CMAKE_BINARY_DIR}/libs/Statistics/statistics.dll"
-        DESTINATION "${CMAKE_BINARY_DIR}/app/")
+set_target_properties(io_utils PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
+)
+
+set_target_properties(data_gen PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
+)
+
+set_target_properties(statistics PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
+)

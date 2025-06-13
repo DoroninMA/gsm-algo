@@ -2,6 +2,7 @@
 #define _STATISTICTS_BERLEKAMP_MASSEY
 
 #include <vector>
+#include <cstdint>
 
 class BerlekampMassey
 {

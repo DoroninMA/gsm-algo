@@ -2,6 +2,7 @@
 #define _DATA_GEN_AUTH_DATA_GEN_STRATEGY
 
 #include <vector>
+#include <cstdint>
 
 class AuthDataGenStrategy
 {

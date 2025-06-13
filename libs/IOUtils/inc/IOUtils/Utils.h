@@ -2,6 +2,7 @@
 #define _IO_UTILS_UTILS
 
 #include <string>
+#include <cstdint>
 #include <vector>
 
 std::string bytesToHexString(const uint8_t* str, size_t bytes);

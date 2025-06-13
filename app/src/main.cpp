@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 {
     std::string kiRandFileName = "auth_input.csv";
 
-    size_t keyCount = 1000;
+    size_t keyCount = 1000000;
     generateAuthInput(kiRandFileName, keyCount);
 
     runAvalanchTest(kiRandFileName, "avalanche_comp128_");
