@@ -1,5 +1,5 @@
-﻿#ifndef _IO_UTILS_FILE_READER
-#define _IO_UTILS_FILE_READER
+﻿#ifndef _IO_UTILS_FILE_READER_H
+#define _IO_UTILS_FILE_READER_H
 
 #include <iostream>
 #include <fstream>

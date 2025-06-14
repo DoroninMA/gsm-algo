@@ -1,5 +1,5 @@
-#ifndef _DATA_GEN_AUTH_DATA_GEN_STRATEGY
-#define _DATA_GEN_AUTH_DATA_GEN_STRATEGY
+#ifndef _DATA_GEN_AUTH_DATA_GEN_STRATEGY_H
+#define _DATA_GEN_AUTH_DATA_GEN_STRATEGY_H
 
 #include <vector>
 #include <cstdint>

@@ -1,5 +1,5 @@
-#ifndef _NETWORK_UDP_SOCKET
-#define _NETWORK_UDP_SOCKET
+#ifndef _NETWORK_UDP_SOCKET_H
+#define _NETWORK_UDP_SOCKET_H
 
 #include <boost/asio.hpp>
 #include <iostream>

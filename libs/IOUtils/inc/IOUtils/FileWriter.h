@@ -1,5 +1,5 @@
-#ifndef _IO_UTILS_FILE_WRITER
-#define _IO_UTILS_FILE_WRITER
+#ifndef _IO_UTILS_FILE_WRITER_H
+#define _IO_UTILS_FILE_WRITER_H
 
 #include <string>
 #include <fstream>

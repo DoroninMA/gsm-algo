@@ -1,5 +1,5 @@
-#ifndef _STATISTICTS_AVALANCHE_TEST
-#define _STATISTICTS_AVALANCHE_TEST
+#ifndef _STATISTICTS_AVALANCHE_TEST_H
+#define _STATISTICTS_AVALANCHE_TEST_H
 
 #include <vector>
 #include <functional>

@@ -1,5 +1,5 @@
-#ifndef _DATA_GEN_AUTH_DATA_GENERATOR
-#define _DATA_GEN_AUTH_DATA_GENERATOR
+#ifndef _DATA_GEN_AUTH_DATA_GENERATOR_H
+#define _DATA_GEN_AUTH_DATA_GENERATOR_H
 
 #include <vector>
 #include <memory>

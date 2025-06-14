@@ -15,6 +15,8 @@ endif()
 
 file(GLOB mobile_src CONFIGURE_DEPENDS
     "src/*.cpp"
+    "src/Level3/CcMessage/*.cpp"
+    "src/Level3/MmMessage/*.cpp"
 )
 
 add_library(network SHARED ${mobile_src})

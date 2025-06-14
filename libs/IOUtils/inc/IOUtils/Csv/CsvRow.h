@@ -1,5 +1,5 @@
-﻿#ifndef _IO_UTILS_CSV_ROW
-#define _IO_UTILS_CSV_ROW
+﻿#ifndef _IO_UTILS_CSV_ROW_H
+#define _IO_UTILS_CSV_ROW_H
 
 #include <iostream>
 #include <vector>

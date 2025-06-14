@@ -1,5 +1,5 @@
-﻿#ifndef _IO_UTILS_UTILS
-#define _IO_UTILS_UTILS
+﻿#ifndef _IO_UTILS_UTILS_H
+#define _IO_UTILS_UTILS_H
 
 #include <string>
 #include <cstdint>
