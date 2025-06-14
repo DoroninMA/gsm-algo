@@ -11,13 +11,19 @@ set(IO_UTILS_PROJECT "${PROJECT_SOURCE_DIR}/libs/IOUtils")
 set(GSM_CRYPTO_PROJECT "${PROJECT_SOURCE_DIR}/libs/GsmCrypto")
 set(DATA_GEN_PROJECT "${PROJECT_SOURCE_DIR}/libs/DataGen")
 set(STATISTICS_PROJECT "${PROJECT_SOURCE_DIR}/libs/Statistics")
+set(NETWORK_PROJECT "${PROJECT_SOURCE_DIR}/libs/Network")
+set(HOST_PROJECT "${PROJECT_SOURCE_DIR}/libs/Host")
+set(MOBILE_PROJECT "${PROJECT_SOURCE_DIR}/libs/Mobile")
 set(APP_PROJECT "${PROJECT_SOURCE_DIR}/app")
 
-add_subdirectory ("${GSM_CRYPTO_PROJECT}")
-add_subdirectory ("${IO_UTILS_PROJECT}")
-add_subdirectory ("${DATA_GEN_PROJECT}")
-add_subdirectory ("${STATISTICS_PROJECT}")
-add_subdirectory ("${APP_PROJECT}")
+add_subdirectory("${GSM_CRYPTO_PROJECT}")
+add_subdirectory("${IO_UTILS_PROJECT}")
+add_subdirectory("${DATA_GEN_PROJECT}")
+add_subdirectory("${STATISTICS_PROJECT}")
+add_subdirectory("${NETWORK_PROJECT}")
+add_subdirectory("${HOST_PROJECT}")
+add_subdirectory("${MOBILE_PROJECT}")
+add_subdirectory("${APP_PROJECT}")
 
 
 target_link_libraries(app
@@ -26,6 +32,7 @@ target_link_libraries(app
     io_utils
     data_gen
     statistics
+    network
 )
 
 
@@ -46,5 +53,9 @@ set_target_properties(data_gen PROPERTIES
 )
 
 set_target_properties(statistics PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
+)
+
+set_target_properties(network PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
 )

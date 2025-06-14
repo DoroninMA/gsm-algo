@@ -3,7 +3,7 @@
 class RandomU8IStringGenerator
 {
 public:
-    RandomU8IStringGenerator(size_t length);
+    explicit RandomU8IStringGenerator(size_t length);
     ~RandomU8IStringGenerator() = default;
 
     std::vector<uint8_t> generateNext();
