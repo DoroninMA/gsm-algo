@@ -5,7 +5,10 @@
 
 enum class GsmMsgTypeL3 : uint8_t
 {
-    AUTH_REQUEST = 0x2B
+    AUTH_REQUEST = 0x2B,
+    AUTH_RESPONSE = 0x2C,
+
+    CIPHER_MODE_COMMAND = 0x35,
 };
 
 #endif

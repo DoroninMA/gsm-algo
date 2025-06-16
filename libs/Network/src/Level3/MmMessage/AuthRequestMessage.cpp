@@ -1,7 +1,7 @@
 #include <Network/Level3/MmMessage/AuthRequestMessage.h>
 
-#include <Network/GsmDefs.h>
 #include <stdexcept>
+#include "Network/GsmDefs.h"
 
 static constexpr uint8_t TLV_RAND_TAG = 0x21;
 static constexpr uint8_t TLV_KC_TAG = 0x22;
