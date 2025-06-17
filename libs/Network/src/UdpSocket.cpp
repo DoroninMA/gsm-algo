@@ -1,126 +1,67 @@
 #include <Network/UdpSocket.h>
 
-const std::size_t UdpSocket::DEFAULT_BUFFER_SIZE = 2048;
+const size_t UdpSocket::DEFAULT_BUFFER_SIZE = 2048;
 
-UdpSocket::UdpSocket(boost::asio::io_context& ioContext, uint16_t localPort, std::size_t bufferSize)
+UdpSocket::UdpSocket(boost::asio::io_context& ioContext, uint16_t localPort, size_t bufferSize)
     : _ioContext(ioContext),
-      _socket(ioContext, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), localPort)),
-      _recvBuffer(bufferSize),
-      _remoteEndpoint(boost::asio::ip::udp::v4(), 0)
-{
-}
-
-UdpSocket::~UdpSocket()
-{
-    try
-    {
-        if (_socket.is_open())
-            _socket.close();
-    }
-    catch (...) {}
-}
-
-std::string UdpSocket::getLastSenderAddress() const
-{
-    return _lastSenderEndpoint.address().to_string();
-}
-
-uint16_t UdpSocket::getLastSenderPort() const
-{
-    return _lastSenderEndpoint.port();
-}
+      _socket(ioContext,
+          boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), localPort)),
+      _recvBuffer(bufferSize)
+{}
 
 void UdpSocket::setRemote(const std::string& remoteAddress, uint16_t remotePort)
 {
     _remoteEndpoint = boost::asio::ip::udp::endpoint(
-        boost::asio::ip::address::from_string(remoteAddress), remotePort);
+        boost::asio::ip::address::from_string(remoteAddress),
+        remotePort
+    );
 }
 
 void UdpSocket::send(const std::vector<uint8_t>& data)
 {
-    if (_remoteEndpoint.address().is_unspecified())
-    {
-        std::cerr << "Remote endpoint is not set!" << std::endl;
-        return;
-    }
-
-    try
-    {
-        _socket.send_to(boost::asio::buffer(data), _remoteEndpoint);
-    }
-    catch (const boost::system::system_error& e)
-    {
-        std::cerr << "Error sending UDP message: " << e.what() << std::endl;
-    }
+    _socket.send_to(boost::asio::buffer(data), _remoteEndpoint);
 }
 
 void UdpSocket::asyncSend(const std::vector<uint8_t>& data)
 {
-    if (_remoteEndpoint.address().is_unspecified())
-    {
-        if (_sendHandler)
-        {
-            boost::system::error_code ec = boost::asio::error::invalid_argument;
-            _sendHandler(ec, 0);
-        }
-        return;
-    }
-
     _socket.async_send_to(
-        boost::asio::buffer(data),
-        _remoteEndpoint,
-        [this](const boost::system::error_code& ec, std::size_t bytesSent)
+        boost::asio::buffer(data), _remoteEndpoint,
+        [this](const boost::system::error_code& ec, size_t bytes)
         {
             if (_sendHandler)
-                _sendHandler(ec, bytesSent);
-        });
+            {
+                _sendHandler(_toStdError(ec), bytes);
+            }
+        }
+    );
 }
 
 std::vector<uint8_t> UdpSocket::receive()
 {
-    std::vector<uint8_t> buffer(_recvBuffer.size());
+    boost::asio::ip::udp::endpoint senderEndpoint;
+    std::vector<uint8_t> buffer(DEFAULT_BUFFER_SIZE);
+    size_t bytes = _socket.receive_from(boost::asio::buffer(buffer), senderEndpoint);
 
-    try
-    {
-        _lastSenderEndpoint = boost::asio::ip::udp::endpoint();
-
-        size_t bytesReceived = _socket.receive_from(
-            boost::asio::buffer(buffer), _lastSenderEndpoint);
-
-        buffer.resize(bytesReceived);
-    }
-    catch (const boost::system::system_error& e)
-    {
-        std::cerr << "Error receiving UDP message: " << e.what() << std::endl;
-        buffer.clear();
-    }
-
+    _lastSenderEndpoint = senderEndpoint;
+    buffer.resize(bytes);
     return buffer;
 }
 
 void UdpSocket::asyncReceive()
 {
-    _recvBuffer.resize(DEFAULT_BUFFER_SIZE);
-
     _socket.async_receive_from(
-        boost::asio::buffer(_recvBuffer),
-        _lastSenderEndpoint,
-        [this](const boost::system::error_code& ec, std::size_t bytesReceived)
+        boost::asio::buffer(_recvBuffer), _lastSenderEndpoint,
+        [this](const boost::system::error_code& ec, size_t bytes)
         {
-            std::vector<uint8_t> data;
-            if (!ec)
-            {
-                data.assign(_recvBuffer.begin(), _recvBuffer.begin() + bytesReceived);
-            }
-
-            std::string senderAddr = _lastSenderEndpoint.address().to_string();
-            uint16_t senderPort = _lastSenderEndpoint.port();
-
             if (_receiveHandler)
             {
-                _receiveHandler(ec, bytesReceived, data, senderAddr, senderPort);
+                std::vector<uint8_t> data(_recvBuffer.begin(), _recvBuffer.begin() + bytes);
+                _receiveHandler(_toStdError(ec), bytes, data,
+                                _lastSenderEndpoint.address().to_string(),
+                                _lastSenderEndpoint.port());
             }
-        });
+        }
+    );
 }
 
 void UdpSocket::setOnReceive(ReceiveHandler handler)
@@ -131,4 +72,9 @@ void UdpSocket::setOnReceive(ReceiveHandler handler)
 void UdpSocket::setOnSend(SendHandler handler)
 {
     _sendHandler = std::move(handler);
+}
+
+std::error_code UdpSocket::_toStdError(const boost::system::error_code& boostEc)
+{
+    return std::error_code(boostEc.value(), std::generic_category());
 }

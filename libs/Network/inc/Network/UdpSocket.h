@@ -5,37 +5,35 @@
 #include <iostream>
 #include <vector>
 #include <functional>
+#include <system_error>
 
-class UdpSocket
-{
+#include "ITransport.h"
+
+class UdpSocket : public ITransport {
 public:
-    static const std::size_t DEFAULT_BUFFER_SIZE;
+    static const size_t DEFAULT_BUFFER_SIZE;
 
-    using SendHandler = std::function<void(const boost::system::error_code&, std::size_t)>;
-    using ReceiveHandler = std::function<void(
-        const boost::system::error_code&,
-        std::size_t,
-        const std::vector<uint8_t>&,
-        const std::string &, uint16_t)>;
+    explicit UdpSocket(
+        boost::asio::io_context& ioContext,
+        uint16_t localPort = 0,
+        size_t bufferSize = DEFAULT_BUFFER_SIZE);
 
-    UdpSocket(boost::asio::io_context& ioContext, uint16_t localPort = 0, std::size_t bufferSize = DEFAULT_BUFFER_SIZE);
-    ~UdpSocket();
-
-    std::string getLastSenderAddress() const;
-    uint16_t getLastSenderPort() const;
+    ~UdpSocket() override = default;
 
     void setRemote(const std::string& remoteAddress, uint16_t remotePort);
 
-    void send(const std::vector<uint8_t>& data);
-    void asyncSend(const std::vector<uint8_t>& data);
+    void send(const std::vector<uint8_t>& data) override;
+    void asyncSend(const std::vector<uint8_t>& data) override;
 
-    std::vector<uint8_t> receive();
-    void asyncReceive();
+    std::vector<uint8_t> receive() override;
+    void asyncReceive() override;
 
-    void setOnReceive(ReceiveHandler handler);
-    void setOnSend(SendHandler handler);
+    void setOnReceive(ReceiveHandler handler) override;
+    void setOnSend(SendHandler handler) override;
 
 private:
+    static std::error_code _toStdError(const boost::system::error_code& boostEc);
+
     boost::asio::io_context& _ioContext;
     boost::asio::ip::udp::socket _socket;
 
@@ -47,6 +45,5 @@ private:
     ReceiveHandler _receiveHandler;
     SendHandler _sendHandler;
 };
-
 
 #endif
