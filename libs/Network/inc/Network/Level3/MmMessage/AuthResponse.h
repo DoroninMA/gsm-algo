@@ -1,13 +1,13 @@
-#ifndef _NETWORK_LEVEL3_AUTH_RESPONSE_MESSAGE_H
-#define _NETWORK_LEVEL3_AUTH_RESPONSE_MESSAGE_H
+#ifndef _NETWORK_LEVEL3_MM_MESSAGE_AUTH_RESPONSE_MESSAGE_H
+#define _NETWORK_LEVEL3_MM_MESSAGE_AUTH_RESPONSE_MESSAGE_H
 
 #include <Network/Tlv.h>
 #include <Network/GsmMessage.h>
-#include <vector>
-#include <cstdint>
+
+#include "MmMessage.h"
 
 
-class AuthResponseMessage final : public GsmMessage
+class AuthResponseMessage final : public MmMessage
 {
 public:
     AuthResponseMessage();
@@ -17,7 +17,7 @@ public:
 
     void parse(const std::vector<uint8_t>& data) override;
     std::vector<uint8_t> pack() const override;
-    uint8_t getMessageType() const override;
+    uint8_t messageType() const override;
 
 private:
     Tlv _sres;

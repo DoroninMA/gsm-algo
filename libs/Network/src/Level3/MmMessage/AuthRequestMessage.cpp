@@ -7,13 +7,12 @@ static constexpr uint8_t TLV_RAND_TAG = 0x21;
 static constexpr uint8_t TLV_KC_TAG = 0x22;
 
 AuthRequestMessage::AuthRequestMessage()
-    : GsmMessage(), _isKcExist(false)
+    : _isKcExist(false)
 {
     setRand(std::vector<uint8_t>(16, 0));
 }
 
 AuthRequestMessage::AuthRequestMessage(const std::vector<uint8_t>& rand, const std::vector<uint8_t>& kc)
-    : GsmMessage()
 {
     setRand(rand);
     setKc(kc);
@@ -34,7 +33,7 @@ std::vector<uint8_t> AuthRequestMessage::rand() const
     return _rand.value();
 }
 
-uint8_t AuthRequestMessage::getMessageType() const
+uint8_t AuthRequestMessage::messageType() const
 {
     return static_cast<uint8_t>(GsmMsgTypeL3::AUTH_REQUEST);
 }
@@ -43,29 +42,35 @@ void AuthRequestMessage::parse(const std::vector<uint8_t>& data)
 {
     size_t offset = 0;
 
-    if (data.size() < 1)
+    MmMessage::parse(data);
+    offset += 1;
+
+    if (offset >= data.size())
     {
-        throw std::runtime_error("AuthRequestMessage: data too short");
+        throw std::runtime_error("AuthRequestMessage: data too short for message type");
     }
 
     const uint8_t msgType = data[offset++];
-    if (msgType != getMessageType())
+    if (msgType != messageType())
     {
         throw std::runtime_error("AuthRequestMessage: incorrect message type");
     }
 
-    // parse RAND (optional field)
+    if (offset >= data.size())
+    {
+        throw std::runtime_error("AuthRequestMessage: missing RAND TLV");
+    }
+
     _rand = Tlv::parse(data, offset);
     if (_rand.tag() != TLV_RAND_TAG || _rand.length() != 16)
     {
         throw std::runtime_error("AuthRequestMessage: invalid RAND TLV");
     }
 
-    // try to parse Kc if exist
     if (offset < data.size())
     {
-        const Tlv kcTlv = Tlv::parse(data, offset);
-        if (kcTlv.tag() != TLV_KC_TAG || kcTlv.length() != 8)
+        _kc = Tlv::parse(data, offset);
+        if (_kc.tag() != TLV_KC_TAG || _kc.length() != 8)
         {
             throw std::runtime_error("AuthRequestMessage: invalid Kc TLV");
         }
@@ -91,8 +96,8 @@ void AuthRequestMessage::setRand(const std::vector<uint8_t>& rand)
 
 std::vector<uint8_t> AuthRequestMessage::pack() const
 {
-    std::vector<uint8_t> out;
-    out.push_back(getMessageType());
+    std::vector<uint8_t> out = MmMessage::pack();
+    out.push_back(messageType());
 
     if (_rand.tag() != TLV_RAND_TAG || _rand.length() != 16)
     {
@@ -100,7 +105,7 @@ std::vector<uint8_t> AuthRequestMessage::pack() const
     }
 
     std::vector<uint8_t> randEncoded = _rand.pack();
-    out.insert(out.end(), randEncoded.cbegin(), randEncoded.cend());
+    out.insert(out.end(), randEncoded.begin(), randEncoded.end());
 
     if (_isKcExist)
     {
@@ -110,7 +115,7 @@ std::vector<uint8_t> AuthRequestMessage::pack() const
         }
 
         std::vector<uint8_t> kcEncoded = _kc.pack();
-        out.insert(out.end(), kcEncoded.cbegin(), kcEncoded.cend());
+        out.insert(out.end(), kcEncoded.begin(), kcEncoded.end());
     }
 
     return out;

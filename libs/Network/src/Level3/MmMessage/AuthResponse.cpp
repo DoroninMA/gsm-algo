@@ -22,20 +22,21 @@ void AuthResponseMessage::setSres(const std::vector<uint8_t>& sresData)
         throw std::invalid_argument("AuthResponseMessage: SRES must be exactly 4 bytes");
     }
 
-    _sres = Tlv(0x22, sresData);
+    _sres = Tlv(TLV_KC_TAG, sresData);
 }
 
 void AuthResponseMessage::parse(const std::vector<uint8_t>& data)
 {
-    size_t offset = 0;
+    MmMessage::parse(data);
+    size_t offset = 1;
 
-    if (data.size() < 1)
+    if (data.size() <= offset)
     {
-        throw std::runtime_error("AuthResponseMessage: data too short");
+        throw std::runtime_error("AuthResponseMessage: data too short for message type");
     }
 
     uint8_t msgType = data[offset++];
-    if (msgType != getMessageType())
+    if (msgType != messageType())
     {
         throw std::runtime_error("AuthResponseMessage: incorrect message type");
     }
@@ -54,8 +55,8 @@ std::vector<uint8_t> AuthResponseMessage::pack() const
         throw std::runtime_error("AuthResponseMessage: SRES must be 4 bytes");
     }
 
-    std::vector<uint8_t> out;
-    out.push_back(getMessageType());
+    std::vector<uint8_t> out = MmMessage::pack();
+    out.push_back(messageType());
 
     std::vector<uint8_t> sresEncoded = _sres.pack();
     out.insert(out.end(), sresEncoded.begin(), sresEncoded.end());
@@ -63,7 +64,7 @@ std::vector<uint8_t> AuthResponseMessage::pack() const
     return out;
 }
 
-uint8_t AuthResponseMessage::getMessageType() const
+uint8_t AuthResponseMessage::messageType() const
 {
     return static_cast<uint8_t>(GsmMsgTypeL3::AUTH_RESPONSE);
 }

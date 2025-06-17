@@ -4,15 +4,22 @@
 #include <vector>
 #include <cstdint>
 
+#include "GsmDefs.h"
+
 class GsmMessage
 {
 public:
     virtual ~GsmMessage() = default;
 
-    virtual uint8_t getMessageType() const = 0;
+    virtual uint8_t messageType() const = 0;
 
     virtual void parse(const std::vector<uint8_t>& data) = 0;
     virtual std::vector<uint8_t> pack() const = 0;
+
+    virtual GsmMessagePD transactionType() const { return _pd; }
+
+protected:
+    GsmMessagePD _pd = GsmMessagePD::NONE;
 };
 
 #endif

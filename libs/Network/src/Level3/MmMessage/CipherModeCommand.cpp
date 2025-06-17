@@ -10,22 +10,22 @@ CipherModeCommand::CipherModeCommand()
 {
 }
 
-uint8_t CipherModeCommand::getMessageType() const
+uint8_t CipherModeCommand::messageType() const
 {
     return static_cast<uint8_t>(GsmMsgTypeL3::CIPHER_MODE_COMMAND);
 }
 
-uint8_t CipherModeCommand::getCipherAlgorithm() const
+uint8_t CipherModeCommand::cipherAlgorithm() const
 {
     return _cipherAlgorithm;
 }
 
-uint8_t CipherModeCommand::getKeySequence() const
+uint8_t CipherModeCommand::keySequence() const
 {
     return _keySequence;
 }
 
-std::vector<uint8_t> CipherModeCommand::getMobileIdentity() const
+std::vector<uint8_t> CipherModeCommand::mobileIdentity() const
 {
     return _mobileIdentity.value();
 }
@@ -58,15 +58,16 @@ void CipherModeCommand::setMobileIdentity(const std::vector<uint8_t>& mi)
 
 void CipherModeCommand::parse(const std::vector<uint8_t>& data)
 {
-    size_t offset = 0;
+    MmMessage::parse(data);
 
-    if (data.size() < 3)
+    size_t offset = 1;
+    if (data.size() < 4)
     {
         throw std::runtime_error("CipherModeCommand: data too short");
     }
 
     uint8_t msgType = data[offset++];
-    if (msgType != getMessageType())
+    if (msgType != messageType())
     {
         throw std::runtime_error("CipherModeCommand: wrong message type");
     }
@@ -92,8 +93,8 @@ void CipherModeCommand::parse(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> CipherModeCommand::pack() const
 {
-    std::vector<uint8_t> out;
-    out.push_back(getMessageType());
+    std::vector<uint8_t> out = MmMessage::pack();
+    out.push_back(messageType());
     out.push_back(_cipherAlgorithm);
     out.push_back(_keySequence);
 
