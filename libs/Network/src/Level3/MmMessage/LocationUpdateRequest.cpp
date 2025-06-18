@@ -2,14 +2,14 @@
 
 #include <stdexcept>
 
-LocationUpdatingRequest::LocationUpdatingRequest()
+LocationUpdateRequest::LocationUpdateRequest()
     : _locationUpdateType(0),
       _isCipherKeySeqNumExist(false),
       _cipherKeySeqNum(0)
 {
 }
 
-LocationUpdatingRequest::LocationUpdatingRequest(
+LocationUpdateRequest::LocationUpdateRequest(
     uint8_t locationUpdateType,
     const std::vector<uint8_t>& lai,
     const MobileIdentity& mobileIdentity,
@@ -25,58 +25,58 @@ LocationUpdatingRequest::LocationUpdatingRequest(
     }
 }
 
-uint8_t LocationUpdatingRequest::messageType() const
+uint8_t LocationUpdateRequest::messageType() const
 {
     return static_cast<uint8_t>(GsmMsgTypeL3::LOCATION_UPDATE_REQUEST);
 }
 
-uint8_t LocationUpdatingRequest::locationUpdateType() const
+uint8_t LocationUpdateRequest::locationUpdateType() const
 {
     return _locationUpdateType;
 }
 
-std::vector<uint8_t> LocationUpdatingRequest::lai() const
+std::vector<uint8_t> LocationUpdateRequest::lai() const
 {
     return _lai;
 }
 
-MobileIdentity LocationUpdatingRequest::mobileIdentity() const
+MobileIdentity LocationUpdateRequest::mobileIdentity() const
 {
     return _mobileIdentity;
 }
 
-uint8_t LocationUpdatingRequest::cipherKeySeqNum() const
+uint8_t LocationUpdateRequest::cipherKeySeqNum() const
 {
     return _cipherKeySeqNum;
 }
 
-bool LocationUpdatingRequest::isCipherKeySequenceNumberExist() const
+bool LocationUpdateRequest::isCipherKeySequenceNumberExist() const
 {
     return _isCipherKeySeqNumExist;
 }
 
-void LocationUpdatingRequest::setLocationUpdateType(uint8_t type)
+void LocationUpdateRequest::setLocationUpdateType(uint8_t type)
 {
     _locationUpdateType = type;
 }
 
-void LocationUpdatingRequest::setLai(const std::vector<uint8_t>& lai)
+void LocationUpdateRequest::setLai(const std::vector<uint8_t>& lai)
 {
     _lai = lai;
 }
 
-void LocationUpdatingRequest::setMobileIdentity(const MobileIdentity& mi)
+void LocationUpdateRequest::setMobileIdentity(const MobileIdentity& mi)
 {
     _mobileIdentity = mi;
 }
 
-void LocationUpdatingRequest::setCipherKeySeqNum(uint8_t seq)
+void LocationUpdateRequest::setCipherKeySeqNum(uint8_t seq)
 {
     _cipherKeySeqNum = seq;
     _isCipherKeySeqNumExist = true;
 }
 
-void LocationUpdatingRequest::parse(const std::vector<uint8_t>& data)
+void LocationUpdateRequest::parse(const std::vector<uint8_t>& data)
 {
     MmMessage::parse(data);
 
@@ -113,7 +113,7 @@ void LocationUpdatingRequest::parse(const std::vector<uint8_t>& data)
     _mobileIdentity.parse(mi_data);
 }
 
-std::vector<uint8_t> LocationUpdatingRequest::pack() const
+std::vector<uint8_t> LocationUpdateRequest::pack() const
 {
     std::vector<uint8_t> result = MmMessage::pack();
 

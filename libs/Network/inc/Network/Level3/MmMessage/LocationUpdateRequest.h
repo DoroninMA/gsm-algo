@@ -18,11 +18,11 @@
 */
 
 
-class LocationUpdatingRequest final : public MmMessage
+class LocationUpdateRequest final : public MmMessage
 {
 public:
-    LocationUpdatingRequest();
-    LocationUpdatingRequest(
+    LocationUpdateRequest();
+    LocationUpdateRequest(
         uint8_t locationUpdateType,
         const std::vector<uint8_t>& lai,
         const MobileIdentity& mobileIdentity,

@@ -8,12 +8,12 @@ class CcMessage : public GsmMessage
 public:
     void parse(const std::vector<uint8_t>& data) override;
     std::vector<uint8_t> pack() const override;
-    virtual uint8_t messageType() const = 0;
 
     uint8_t transactionId() const;
+    void setTransactionId(uint8_t transactionId);
 
 protected:
-    uint8_t _ti;
+    uint8_t _tid;
 
     CcMessage();
 };

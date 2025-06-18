@@ -66,8 +66,8 @@ void SetupMessage::setCallingPartyNumber(const std::string& num)
 
 std::vector<uint8_t> SetupMessage::pack() const
 {
-    std::vector<uint8_t> out;
-    out.push_back(static_cast<uint8_t>(GsmMsgTypeL3::SETUP));
+    std::vector<uint8_t> out = CcMessage::pack();
+    out.push_back(messageType());
 
     // bearerCapability
     std::vector<uint8_t> bcPacked = _bearerCapability.pack();
@@ -106,13 +106,16 @@ std::vector<uint8_t> SetupMessage::pack() const
 void SetupMessage::parse(const std::vector<uint8_t>& data)
 {
     size_t offset = 0;
-    if (data.size() < 2)
+    CcMessage::parse(data);
+    offset++;
+
+    if (offset >= data.size())
     {
-        throw std::runtime_error("SetupMessage: data too short");
+        throw std::runtime_error("SetupMessage: missing message type");
     }
 
-    uint8_t mt = data[offset++];
-    if (mt != static_cast<uint8_t>(GsmMsgTypeL3::SETUP))
+    uint8_t msgType = data[offset++];
+    if (msgType != messageType())
     {
         throw std::runtime_error("SetupMessage: wrong message type");
     }
@@ -132,7 +135,7 @@ void SetupMessage::parse(const std::vector<uint8_t>& data)
         throw std::runtime_error("SetupMessage: expected calledParty");
     }
 
-    // BCD decode
+    // called party
     {
         const std::string digits = Bcd::parse(calledTlv.value());
         _calledPartyNumber.clear();

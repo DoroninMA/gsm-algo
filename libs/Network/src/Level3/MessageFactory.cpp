@@ -37,7 +37,7 @@ std::unique_ptr<GsmMessage> MessageFactory::parse(const std::vector<uint8_t>& da
                     message = std::make_unique<CipherModeCommand>();
                     break;
             case static_cast<uint8_t>(GsmMsgTypeL3::LOCATION_UPDATE_REQUEST):
-                    message = std::make_unique<LocationUpdatingRequest>();
+                    message = std::make_unique<LocationUpdateRequest>();
                     break;
             default:
                 throw std::runtime_error("MessageFactory: Unknown MM message type");

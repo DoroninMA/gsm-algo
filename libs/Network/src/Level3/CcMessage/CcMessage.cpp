@@ -5,7 +5,7 @@
 CcMessage::CcMessage()
 {
     _pd = GsmMessagePD::CALL_CONTROL;
-    _ti = 0;
+    _tid = 0;
 }
 
 void CcMessage::parse(const std::vector<uint8_t>& data)
@@ -13,7 +13,7 @@ void CcMessage::parse(const std::vector<uint8_t>& data)
     if (data.size() >= sizeof(_pd))
     {
         uint8_t pd = data[0] & 0xF0;
-        _ti = data[0] & 0x0F;
+        _tid = data[0] & 0x0F;
 
         if (pd != static_cast<uint8_t>(_pd))
         {
@@ -28,10 +28,20 @@ void CcMessage::parse(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> CcMessage::pack() const
 {
-    return std::vector<uint8_t>({ static_cast<uint8_t>((static_cast<uint8_t>(_pd) << 4) | _ti) });
+    return std::vector<uint8_t>({ static_cast<uint8_t>((static_cast<uint8_t>(_pd) << 4) | _tid) });
 }
 
 uint8_t CcMessage::transactionId() const
 {
-    return _ti;
+    return _tid;
+}
+
+void CcMessage::setTransactionId(uint8_t transactionId)
+{
+    if (transactionId >= 0xF0)
+    {
+        throw std::runtime_error("CcMessage::setTransactionId(): invalid transaction id");
+    }
+
+    _tid = transactionId;
 }
