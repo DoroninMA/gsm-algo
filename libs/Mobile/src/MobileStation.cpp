@@ -18,29 +18,40 @@ MobileStation::MobileStation(RadioLink& link, const MobileIdentity& imsi, const 
     : _link(link), _imsi(imsi), _ki(ki), _state(State::DISCONNECTED),
       _keySeq(0), _transactionId(0)
 {
-    _link.setReceiveHandler([this](const std::vector<uint8_t>& raw)
+    _link.setReceiveHandler([this](
+        const std::error_code& ec,
+        std::size_t bytesReceived,
+        const std::vector<uint8_t>& raw,
+        const std::string& senderAddress,
+        uint16_t senderPort)
     {
-        std::unique_ptr<GsmMessage> msg = MessageFactory::parse(raw);
-        switch (msg->messageType())
+        if (ec) return;
+
+        try
         {
-            case GsmMsgTypeL3::AUTH_REQUEST:
-                _handleAuthRequest(*msg);
-                break;
-            case GsmMsgTypeL3::CIPHER_MODE_COMMAND:
-                _handleCipherModeCommand(*msg);
-                break;
-            // case GsmMsgTypeL3::SETUP:
-            //     _handleSetup(*msg);
-            //     break;
-            case GsmMsgTypeL3::CONNECT_ACK:
-                _handleConnectAcknowledge(*msg);
-                break;
-            case GsmMsgTypeL3::VOICE_FRAME:
-                _handleVoiceFrame(*msg);
-                break;
-            default:
-                break;
+            std::unique_ptr<GsmMessage> msg = MessageFactory::parse(raw);
+            switch (msg->messageType())
+            {
+                case GsmMsgTypeL3::AUTH_REQUEST:
+                    _handleAuthRequest(*msg);
+                    break;
+                case GsmMsgTypeL3::CIPHER_MODE_COMMAND:
+                    _handleCipherModeCommand(*msg);
+                    break;
+                // case GsmMsgTypeL3::SETUP:
+                //     _handleSetup(*msg);
+                //     break;
+                case GsmMsgTypeL3::CONNECT_ACK:
+                    _handleConnectAcknowledge(*msg);
+                    break;
+                case GsmMsgTypeL3::VOICE_FRAME:
+                    _handleVoiceFrame(*msg);
+                    break;
+                default:
+                    break;
+            }
         }
+        catch (const std::exception& ex) { }
     });
 }
 
@@ -64,6 +75,12 @@ void MobileStation::connectToBts()
     _link.send(lur.pack());
 }
 
+std::unique_ptr<EncryptMethod> MobileStation::_createEncryptMethod(uint8_t methodId)
+{
+    // @todo add resolving by id
+    return nullptr;
+}
+
 void MobileStation::_handleAuthRequest(const GsmMessage& msg)
 {
     const auto& authReq = static_cast<const AuthRequestMessage&>(msg);
@@ -73,8 +90,15 @@ void MobileStation::_handleAuthRequest(const GsmMessage& msg)
 
 void MobileStation::_sendAuthResponse(const std::vector<uint8_t>& rand)
 {
-    std::vector<uint8_t> sres = cryptoA3(_ki, rand);
-    _kc = cryptoA8(_ki, rand);
+    if (_pAuthGenerator == nullptr)
+    {
+        throw std::runtime_error("MobileStation: set AuthGenerator before call authentication");
+    }
+
+    std::vector<uint8_t> sres;
+    _pAuthGenerator->setKi(_ki);
+    _pAuthGenerator->setRand(rand);
+    _pAuthGenerator->generateNext(sres, _kc);
 
     AuthResponseMessage resp;
     resp.setSres(sres);
@@ -84,8 +108,19 @@ void MobileStation::_sendAuthResponse(const std::vector<uint8_t>& rand)
 void MobileStation::_handleCipherModeCommand(const GsmMessage& msg)
 {
     auto& cmcRequest = static_cast<const CipherModeCommand&>(msg);
+    uint8_t algoId = cmcRequest.cipherAlgorithm();
     _keySeq = cmcRequest.keySequence();
 
+    // update encryption method
+    _pEncryptMethod = _createEncryptMethod(algoId);
+    if (_pEncryptMethod == nullptr)
+    {
+        throw std::runtime_error("MobileStation: EncryptMethod not defined");
+    }
+    _pEncryptMethod->setKc(_kc);
+    _pEncryptMethod->setFrameNumber(0);
+
+    // send response
     CipherModeComplete cmcResponse;
     _link.send(cmcResponse.pack());
 
@@ -130,7 +165,16 @@ void MobileStation::sendVoiceData(const std::vector<uint8_t>& speech)
         throw std::runtime_error("MobileStation: Not in call");
     }
 
-    _link.send(speech);
+    if (!_pEncryptMethod)
+    {
+        throw std::runtime_error("MobileStation: No encryption method set");
+    }
+
+    // encode message
+    std::vector<uint8_t> encrypted = _pEncryptMethod->encrypt(speech);
+    _pEncryptMethod->setFrameNumber(_pEncryptMethod->frameNumber() + 1);
+
+    _link.send(encrypted);
 }
 
 void MobileStation::setLai(const std::vector<uint8_t>& lai)
@@ -143,10 +187,25 @@ void MobileStation::setReceiveVoiceFrameHandler(std::function<void(const VoiceFr
     _voiceCb = std::move(cb);
 }
 
+void MobileStation::setAuthGenerator(std::unique_ptr<AuthGenerator>& pAuthGenerator)
+{
+    _pAuthGenerator = std::move(pAuthGenerator);
+}
+
 void MobileStation::_handleVoiceFrame(const GsmMessage& msg)
 {
+    if (!_pEncryptMethod)
+    {
+        throw std::runtime_error("MobileStation: No encryption method set");
+    }
+
+    // decode message
+    std::vector<uint8_t> encrypted = msg.pack();
+    std::vector<uint8_t> decrypted = _pEncryptMethod->decrypt(encrypted);
+    _pEncryptMethod->setFrameNumber(_pEncryptMethod->frameNumber() + 1);
+
     if (_voiceCb)
     {
-        _voiceCb(msg.pack());
+        _voiceCb(decrypted);
     }
 }

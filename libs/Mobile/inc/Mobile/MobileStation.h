@@ -6,8 +6,10 @@
 
 #include <Network/GsmMessage.h>
 #include <Network/MobileIdentity.h>
-
 #include <Network/RadioLink.h>
+
+#include <GsmCrypto/Auth/AuthGenerator.h>
+#include "GsmCrypto/Encrypt/EcnryptMethod.h"
 
 class MobileStation {
 public:
@@ -32,8 +34,8 @@ public:
     void sendVoiceData(const VoiceFrame& speech);
 
     void setLai(const std::vector<uint8_t>& lai);
-
     void setReceiveVoiceFrameHandler(std::function<void(const VoiceFrame&)> cb);
+    void setAuthGenerator(std::unique_ptr<AuthGenerator>& pAuthGenerator);
 
 private:
     RadioLink& _link;
@@ -46,11 +48,17 @@ private:
     uint8_t _transactionId;
     std::vector<uint8_t> _lai;
 
+    std::unique_ptr<AuthGenerator> _pAuthGenerator;
+    std::unique_ptr<EncryptMethod> _pEncryptMethod;
+
+
     std::function<void(const VoiceFrame&)> _voiceCb;
+
+    static std::unique_ptr<EncryptMethod> _createEncryptMethod(uint8_t methodId);
 
     void _handleAuthRequest(const GsmMessage& msg);
     void _handleCipherModeCommand(const GsmMessage& msg);
-    void _handleSetup(const GsmMessage& msg);
+    // void _handleSetup(const GsmMessage& msg);
     void _handleConnectAcknowledge(const GsmMessage& msg);
     void _handleVoiceFrame(const GsmMessage& msg);
 

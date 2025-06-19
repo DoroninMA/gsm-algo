@@ -1,7 +1,9 @@
 #ifndef NETWORK_ITRANSPORT_H
 #define NETWORK_ITRANSPORT_H
 
+#include <cstdint>
 #include <functional>
+#include <system_error>
 
 class ITransport
 {

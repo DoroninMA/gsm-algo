@@ -20,3 +20,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE network)
+target_link_libraries(${PROJECT_NAME} PRIVATE gsm_crypto)
