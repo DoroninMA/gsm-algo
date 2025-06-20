@@ -11,11 +11,13 @@
 #include <GsmCrypto/Auth/AuthGenerator.h>
 #include "GsmCrypto/Encrypt/EcnryptMethod.h"
 
-class MobileStation {
+class MobileStation
+{
 public:
     using VoiceFrame = std::vector<uint8_t>;
 
-    enum class State {
+    enum class State
+    {
         DISCONNECTED,
         IDLE,
         AUTHENTICATING,
