@@ -14,7 +14,11 @@ public:
     using VoiceFrame = std::vector<uint8_t>;
 
     explicit Host(RadioLink& link);
+    Host(RadioLink& link, const std::vector<uint8_t>& lai);
 
+    const std::vector<uint8_t>& lai() const;
+
+    void setLai(const std::vector<uint8_t>& lai);
     void setEncryptMethod(std::unique_ptr<EncryptMethod> encryptMethod);
     void setAuthGenerator(std::unique_ptr<AuthGenerator> authGen);
     void setVoiceHandler(std::function<void(const VoiceFrame&)> cb);
@@ -23,6 +27,7 @@ private:
     RadioLink& _link;
     std::vector<uint8_t> _kc;
     std::vector<uint8_t> _expectedSres;
+    std::vector<uint8_t> _lai;
 
     uint8_t _keySeq = 0;
 

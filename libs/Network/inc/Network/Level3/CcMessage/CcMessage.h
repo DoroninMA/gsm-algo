@@ -6,6 +6,8 @@
 class CcMessage : public GsmMessage
 {
 public:
+    GsmMessagePD protocolDiscriminator() const final;
+
     void parse(const std::vector<uint8_t>& data) override;
     std::vector<uint8_t> pack() const override;
 
@@ -13,9 +15,7 @@ public:
     void setTransactionId(uint8_t transactionId);
 
 protected:
-    uint8_t _tid;
-
-    CcMessage();
+    uint8_t _tid = 0;
 };
 
 #endif

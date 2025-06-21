@@ -3,21 +3,27 @@
 
 #include <cstdint>
 
-enum class GsmMsgTypeL3 : uint8_t
+enum class GsmMsgTypeCC : uint8_t
 {
     SETUP = 0x05,
-    LOCATION_UPDATE_REQUEST = 0x08,
     CONNECT_ACK = 0x0F,
+    RELEASE = 0x4C,
+    RELEASE_COMPLETE = 0x2A,
 
-    VOICE_FRAME = 0xFF,
+    VOICE_FRAME = 0x3F,
+};
 
+enum class GsmMsgTypeMM : uint8_t
+{
+    LOCATION_UPDATE_REQUEST = 0x08,
+    LOCATION_UPDATE_ACCEPT = 0x10,
+    LOCATION_UPDATE_REJECT = 0x04,
     AUTH_REQUEST = 0x2B,
     AUTH_RESPONSE = 0x2C,
-
     CIPHER_MODE_COMMAND = 0x35,
-
-    RELEASE_MESSAGE = 0x4C,
+    CIPHER_MODE_COMPLETE = 0x2A,
 };
+
 
 // message protocol discriminator
 enum class GsmMessagePD : uint8_t
@@ -26,6 +32,13 @@ enum class GsmMessagePD : uint8_t
     CALL_CONTROL = 0x01,
     MOBILITY_MANAGEMENT = 0x02,
     RADIO_RESOURCE_MANAGEMENT = 0x06
+};
+
+enum class GsmLurCause : uint8_t
+{
+    UNDEFINED = 0,
+    AUTH_FAIL = 0x08,
+    LA_NOT_ALLOWED = 0x11,
 };
 
 #endif

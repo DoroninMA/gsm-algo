@@ -27,16 +27,16 @@ std::unique_ptr<GsmMessage> MessageFactory::parse(const std::vector<uint8_t>& da
         case static_cast<uint8_t>(GsmMessagePD::MOBILITY_MANAGEMENT):
             switch (messageType)
             {
-            case static_cast<uint8_t>(GsmMsgTypeL3::AUTH_REQUEST):
+            case static_cast<uint8_t>(GsmMsgTypeMM::AUTH_REQUEST):
                 message = std::make_unique<AuthRequestMessage>();
                 break;
-            case static_cast<uint8_t>(GsmMsgTypeL3::AUTH_RESPONSE):
+            case static_cast<uint8_t>(GsmMsgTypeMM::AUTH_RESPONSE):
                     message = std::make_unique<AuthResponseMessage>();
                     break;
-            case static_cast<uint8_t>(GsmMsgTypeL3::CIPHER_MODE_COMMAND):
+            case static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMMAND):
                     message = std::make_unique<CipherModeCommand>();
                     break;
-            case static_cast<uint8_t>(GsmMsgTypeL3::LOCATION_UPDATE_REQUEST):
+            case static_cast<uint8_t>(GsmMsgTypeMM::LOCATION_UPDATE_REQUEST):
                     message = std::make_unique<LocationUpdateRequest>();
                     break;
             default:
@@ -47,7 +47,7 @@ std::unique_ptr<GsmMessage> MessageFactory::parse(const std::vector<uint8_t>& da
         case static_cast<uint8_t>(GsmMessagePD::CALL_CONTROL):
             switch (messageType)
             {
-            case static_cast<uint8_t>(GsmMsgTypeL3::SETUP):
+            case static_cast<uint8_t>(GsmMsgTypeCC::SETUP):
                 message = std::make_unique<SetupMessage>();
                 break;
             default:

@@ -35,7 +35,7 @@ std::vector<uint8_t> AuthRequestMessage::rand() const
 
 uint8_t AuthRequestMessage::messageType() const
 {
-    return static_cast<uint8_t>(GsmMsgTypeL3::AUTH_REQUEST);
+    return static_cast<uint8_t>(GsmMsgTypeMM::AUTH_REQUEST);
 }
 
 void AuthRequestMessage::parse(const std::vector<uint8_t>& data)

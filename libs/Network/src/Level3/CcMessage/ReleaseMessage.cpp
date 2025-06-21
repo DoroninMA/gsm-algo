@@ -16,7 +16,7 @@ ReleaseMessage::ReleaseMessage(uint8_t cause)
 
 uint8_t ReleaseMessage::messageType() const
 {
-    return static_cast<uint8_t>(GsmMsgTypeL3::RELEASE_MESSAGE);
+    return static_cast<uint8_t>(GsmMsgTypeCC::RELEASE);
 }
 
 uint8_t ReleaseMessage::cause() const

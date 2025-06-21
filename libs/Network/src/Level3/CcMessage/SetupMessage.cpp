@@ -25,7 +25,7 @@ SetupMessage::SetupMessage(const std::vector<uint8_t>& bearerCap,
 
 uint8_t SetupMessage::messageType() const
 {
-    return static_cast<uint8_t>(GsmMsgTypeL3::SETUP);
+    return static_cast<uint8_t>(GsmMsgTypeCC::SETUP);
 }
 
 std::vector<uint8_t> SetupMessage::getBearerCapability() const

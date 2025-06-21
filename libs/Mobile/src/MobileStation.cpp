@@ -1,3 +1,4 @@
+#include <iostream>
 #include <Mobile/MobileStation.h>
 
 #include <stdexcept>
@@ -25,33 +26,39 @@ MobileStation::MobileStation(RadioLink& link, const MobileIdentity& imsi, const 
         const std::string& senderAddress,
         uint16_t senderPort)
     {
-        if (ec) return;
+        if (ec.value()) return;
 
         try
         {
             std::unique_ptr<GsmMessage> msg = MessageFactory::parse(raw);
             switch (msg->messageType())
             {
-                case GsmMsgTypeL3::AUTH_REQUEST:
+                case GsmMsgTypeMM::AUTH_REQUEST:
                     _handleAuthRequest(*msg);
                     break;
-                case GsmMsgTypeL3::CIPHER_MODE_COMMAND:
+                case GsmMsgTypeMM::LOCATION_UPDATE_REJECT:
+                    _handleAuthReject(*msg);
+                    break;
+                case GsmMsgTypeMM::CIPHER_MODE_COMMAND:
                     _handleCipherModeCommand(*msg);
                     break;
                 // case GsmMsgTypeL3::SETUP:
                 //     _handleSetup(*msg);
                 //     break;
-                case GsmMsgTypeL3::CONNECT_ACK:
+                case GsmMsgTypeCC::CONNECT_ACK:
                     _handleConnectAcknowledge(*msg);
                     break;
-                case GsmMsgTypeL3::VOICE_FRAME:
+                case GsmMsgTypeCC::VOICE_FRAME:
                     _handleVoiceFrame(*msg);
                     break;
                 default:
                     break;
             }
         }
-        catch (const std::exception& ex) { }
+        catch (const std::exception& ex)
+        {
+            std::cerr << "MobileStation: Exception in message handler: " << ex.what() << "\n";
+        }
     });
 }
 
@@ -77,12 +84,23 @@ void MobileStation::connectToBts()
 
 std::unique_ptr<EncryptMethod> MobileStation::_createEncryptMethod(uint8_t methodId)
 {
+    switch (methodId)
+    {
+        case
+    }
+
     // @todo add resolving by id
     return nullptr;
 }
 
 void MobileStation::_handleAuthRequest(const GsmMessage& msg)
 {
+    if (_state != State::AUTHENTICATING)
+    {
+        std::cerr << "MobileStation: Unexpected AUTH_REQUEST in state " << static_cast<int>(_state) << "\n";
+        return;
+    }
+
     const auto& authReq = static_cast<const AuthRequestMessage&>(msg);
     _sendAuthResponse(authReq.rand());
     _state = State::CIPHERING;
@@ -103,6 +121,20 @@ void MobileStation::_sendAuthResponse(const std::vector<uint8_t>& rand)
     AuthResponseMessage resp;
     resp.setSres(sres);
     _link.send(resp.pack());
+}
+
+void MobileStation::_handleAuthReject(const GsmMessage& msg)
+{
+    if (_state != State::AUTHENTICATING)
+    {
+        std::cerr << "MobileStation: Unexpected LOCATION_UPDATE_REJECT in state " << static_cast<int>(_state) << "\n";
+        return;
+    }
+
+    std::cerr << "MobileStation: Authentication rejected by network\n";
+    _state = State::DISCONNECTED;
+    _kc.clear();
+    _keySeq = 0;
 }
 
 void MobileStation::_handleCipherModeCommand(const GsmMessage& msg)
@@ -130,6 +162,8 @@ void MobileStation::_handleCipherModeCommand(const GsmMessage& msg)
 
 void MobileStation::_sendSetupRequest()
 {
+    // 0x11: ITC=Speech, CS=ITU-T
+    // 0x22: Transfer mode=CS (Circuit Switched), Transfer rate=9.6 kbps
     SetupMessage setup({0x11, 0x22}, _imsi.toString(), "");
     _link.send(setup.pack());
     _state = State::IN_CALL;

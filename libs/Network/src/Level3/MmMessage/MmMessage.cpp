@@ -2,14 +2,14 @@
 
 #include <stdexcept>
 
-MmMessage::MmMessage()
+GsmMessagePD MmMessage::protocolDiscriminator() const
 {
-    _pd = GsmMessagePD::MOBILITY_MANAGEMENT;
+    return GsmMessagePD::MOBILITY_MANAGEMENT;
 }
 
 void MmMessage::parse(const std::vector<uint8_t>& data)
 {
-    if (data.size() < sizeof(_pd) || data[0] != static_cast<uint8_t>(_pd))
+    if (data.size() < sizeof(protocolDiscriminator()) || data[0] != 1)
     {
         throw std::runtime_error("MmMessage::parse(): invalid message protocol discriminator");
     }
@@ -17,5 +17,5 @@ void MmMessage::parse(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> MmMessage::pack() const
 {
-    return { static_cast<uint8_t>(_pd) };
+    return { static_cast<uint8_t>(protocolDiscriminator()), messageType() };
 }

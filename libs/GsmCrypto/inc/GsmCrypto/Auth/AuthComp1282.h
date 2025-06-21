@@ -3,7 +3,7 @@
 
 #include "AuthGenerator.h"
 
-class Comp1282 : public AuthGenerator
+class Comp1282 final : public AuthGenerator
 {
 public:
     Comp1282() = default;

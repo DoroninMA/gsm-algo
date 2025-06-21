@@ -29,10 +29,10 @@ public:
     void setCallingPartyNumber(const std::string& num);
 
 private:
-    Tlv _bearerCapability;             // IE tag 0x04
-    std::string _calledPartyNumber;    // BCD string
+    Tlv _bearerCapability;
+    std::string _calledPartyNumber;
     bool _isCallingPartyExist;
-    std::string _callingPartyNumber;   // BCD string, IE tag 0x0A
+    std::string _callingPartyNumber;
 };
 
 #endif

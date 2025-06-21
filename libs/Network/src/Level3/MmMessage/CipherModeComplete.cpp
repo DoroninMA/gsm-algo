@@ -11,7 +11,7 @@ CipherModeComplete::CipherModeComplete() : _isMobileIdentityExist(false)
 
 uint8_t CipherModeComplete::messageType() const
 {
-    return static_cast<uint8_t>(GsmMsgTypeL3::CIPHER_MODE_COMMAND);
+    return static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMMAND);
 }
 
 bool CipherModeComplete::isMobileIdentityExist() const

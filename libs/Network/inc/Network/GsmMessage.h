@@ -16,10 +16,7 @@ public:
     virtual void parse(const std::vector<uint8_t>& data) = 0;
     virtual std::vector<uint8_t> pack() const = 0;
 
-    virtual GsmMessagePD transactionType() const { return _pd; }
-
-protected:
-    GsmMessagePD _pd = GsmMessagePD::NONE;
+    virtual GsmMessagePD protocolDiscriminator() const = 0;
 };
 
 #endif

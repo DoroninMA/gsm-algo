@@ -4,7 +4,7 @@
 #include "CcMessage.h"
 #include <Network/Tlv.h>
 
-class ReleaseMessage : public CcMessage
+class ReleaseMessage final : public CcMessage
 {
 public:
     ReleaseMessage();

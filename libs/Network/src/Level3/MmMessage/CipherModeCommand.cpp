@@ -12,7 +12,7 @@ CipherModeCommand::CipherModeCommand()
 
 uint8_t CipherModeCommand::messageType() const
 {
-    return static_cast<uint8_t>(GsmMsgTypeL3::CIPHER_MODE_COMMAND);
+    return static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMMAND);
 }
 
 uint8_t CipherModeCommand::cipherAlgorithm() const

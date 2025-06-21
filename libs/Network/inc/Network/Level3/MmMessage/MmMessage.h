@@ -6,9 +6,10 @@
 class MmMessage : public GsmMessage
 {
 public:
+    GsmMessagePD protocolDiscriminator() const final;
+
     void parse(const std::vector<uint8_t>& data) override;
     std::vector<uint8_t> pack() const override;
-    virtual uint8_t messageType() const = 0;
 
 protected:
     MmMessage();

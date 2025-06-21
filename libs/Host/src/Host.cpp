@@ -8,6 +8,10 @@
 #include "Network/Level3/MmMessage/CipherModeCommand.h"
 #include "Network/Level3/MmMessage/LocationUpdateRequest.h"
 #include "Network/Level3/L3MessageFactory.h"
+#include "Network/Level3/CcMessage/ReleaseCompleteMessage.h"
+#include "Network/Level3/CcMessage/ReleaseMessage.h"
+#include "Network/Level3/MmMessage/LocationUpdateAccept.h"
+#include "Network/Level3/MmMessage/LocationUpdateReject.h"
 
 Host::Host(RadioLink& link) : _link(link)
 {
@@ -21,22 +25,22 @@ Host::Host(RadioLink& link) : _link(link)
             std::unique_ptr<GsmMessage> msg = MessageFactory::parse(data);
             switch (msg->messageType())
             {
-                case GsmMsgTypeL3::LOCATION_UPDATE_REQUEST:
+                case GsmMsgTypeMM::LOCATION_UPDATE_REQUEST:
                     _handleLocationUpdateRequest(*msg);
                     break;
-                case GsmMsgTypeL3::AUTH_RESPONSE:
+                case GsmMsgTypeMM::AUTH_RESPONSE:
                     _handleAuthResponse(*msg);
                     break;
-                case GsmMsgTypeL3::CIPHER_MODE_COMPLETE:
+                case GsmMsgTypeMM::CIPHER_MODE_COMPLETE:
                     _handleCipherModeComplete(*msg);
                     break;
-                case GsmMsgTypeL3::SETUP:
+                case GsmMsgTypeCC::SETUP:
                     _handleSetup(*msg);
                     break;
-                case GsmMsgTypeL3::RELEASE:
+                case GsmMsgTypeCC::RELEASE:
                     _handleRelease(*msg);
                     break;
-                case GsmMsgTypeL3::VOICE_FRAME:
+                case GsmMsgTypeCC::VOICE_FRAME:
                     _handleVoiceFrame(*msg);
                     break;
                 default:
@@ -51,11 +55,28 @@ Host::Host(RadioLink& link) : _link(link)
     });
 }
 
+Host::Host(RadioLink& link, const std::vector<uint8_t>& lai) : Host(link)
+{
+    setLai(lai);
+}
+
+const std::vector<uint8_t>& Host::lai() const
+{
+    return _lai;
+}
+
+void Host::setLai(const std::vector<uint8_t>& lai)
+{
+    _lai = lai;
+}
+
 void Host::setEncryptMethod(std::unique_ptr<EncryptMethod> encryptMethod)
 {
     _pEncrypt = std::move(encryptMethod);
     if (_pEncrypt)
+    {
         _pEncrypt->setFrameNumber(0);
+    }
 }
 
 void Host::setAuthGenerator(std::unique_ptr<AuthGenerator> authGen)
@@ -76,13 +97,24 @@ void Host::_handleLocationUpdateRequest(const GsmMessage& msg)
     }
 
     const auto& lur = static_cast<const LocationUpdateRequest&>(msg);
+    if (lur.lai() != _lai)
+    {
+        std::cerr << "Host: Location area not allowed\n";
+
+        LocationUpdateReject rejectMsg;
+        rejectMsg.setCause(static_cast<uint8_t>(GsmLurCause::LA_NOT_ALLOWED));
+        _link.send(rejectMsg.pack());
+        return;
+    }
 
     std::vector<uint8_t> rand(16);
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dist(0, 255);
-    for (auto& b: rand)
+    for (uint8_t& b: rand)
+    {
         b = static_cast<uint8_t>(dist(gen));
+    }
 
     AuthRequestMessage auth;
     auth.setRand(rand);
@@ -104,11 +136,19 @@ void Host::_handleAuthResponse(const GsmMessage& msg)
     if (authResp.sres() != _expectedSres)
     {
         std::cerr << "Host: authentication failed\n";
+
+        LocationUpdateReject rejectMsg;
+        rejectMsg.setCause(static_cast<uint8_t>(GsmLurCause::AUTH_FAIL));
+        _link.send(rejectMsg.pack());
+
         return;
     }
 
+    LocationUpdateAccept acceptMsg;
+    _link.send(acceptMsg.pack());
+
     CipherModeCommand cmd;
-    cmd.setCipherAlgorithm(1); // Example algorithm ID
+    cmd.setCipherAlgorithm(1);
     cmd.setKeySequence(_keySeq);
     _link.send(cmd.pack());
 }
@@ -132,9 +172,14 @@ void Host::_handleSetup(const GsmMessage& msg)
     _link.send(ack.pack());
 }
 
-void Host::_handleRelease(const GsmMessage&)
+void Host::_handleRelease(const GsmMessage& msg)
 {
-    std::cout << "Host: received RELEASE, ending call/session.\n";
+    const auto& release = static_cast<const ReleaseMessage&>(msg);
+
+    ReleaseCompleteMessage releaseComplete;
+    releaseComplete.setTransactionId(release.transactionId());
+
+    _link.send(releaseComplete.pack());
 }
 
 void Host::_handleVoiceFrame(const GsmMessage& msg)
@@ -146,7 +191,7 @@ void Host::_handleVoiceFrame(const GsmMessage& msg)
     }
 
     const std::vector<uint8_t>& encrypted = msg.pack();
-    std::vector<uint8_t> decrypted = _pEncrypt->decrypt(encrypted);
+    const std::vector<uint8_t> decrypted = _pEncrypt->decrypt(encrypted);
     _pEncrypt->setFrameNumber(_pEncrypt->frameNumber() + 1);
 
     if (_voiceCb)

@@ -27,7 +27,7 @@ LocationUpdateRequest::LocationUpdateRequest(
 
 uint8_t LocationUpdateRequest::messageType() const
 {
-    return static_cast<uint8_t>(GsmMsgTypeL3::LOCATION_UPDATE_REQUEST);
+    return static_cast<uint8_t>(GsmMsgTypeMM::LOCATION_UPDATE_REQUEST);
 }
 
 uint8_t LocationUpdateRequest::locationUpdateType() const

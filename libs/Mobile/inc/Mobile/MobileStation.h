@@ -59,6 +59,9 @@ private:
     static std::unique_ptr<EncryptMethod> _createEncryptMethod(uint8_t methodId);
 
     void _handleAuthRequest(const GsmMessage& msg);
+
+    void _handleAuthReject(const GsmMessage& msg);
+
     void _handleCipherModeCommand(const GsmMessage& msg);
     // void _handleSetup(const GsmMessage& msg);
     void _handleConnectAcknowledge(const GsmMessage& msg);

@@ -66,5 +66,5 @@ std::vector<uint8_t> AuthResponseMessage::pack() const
 
 uint8_t AuthResponseMessage::messageType() const
 {
-    return static_cast<uint8_t>(GsmMsgTypeL3::AUTH_RESPONSE);
+    return static_cast<uint8_t>(GsmMsgTypeMM::AUTH_RESPONSE);
 }

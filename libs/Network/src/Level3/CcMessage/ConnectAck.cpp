@@ -4,7 +4,7 @@
 
 uint8_t ConnectAck::messageType() const
 {
-    return static_cast<uint8_t>(GsmMsgTypeL3::CONNECT_ACK);
+    return static_cast<uint8_t>(GsmMsgTypeCC::CONNECT_ACK);
 }
 
 std::vector<uint8_t> ConnectAck::pack() const

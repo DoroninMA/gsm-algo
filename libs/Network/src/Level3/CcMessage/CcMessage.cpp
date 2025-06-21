@@ -2,20 +2,19 @@
 
 #include <stdexcept>
 
-CcMessage::CcMessage()
+GsmMessagePD CcMessage::protocolDiscriminator() const
 {
-    _pd = GsmMessagePD::CALL_CONTROL;
-    _tid = 0;
+    return GsmMessagePD::CALL_CONTROL;
 }
 
 void CcMessage::parse(const std::vector<uint8_t>& data)
 {
-    if (data.size() >= sizeof(_pd))
+    if (!data.empty())
     {
-        uint8_t pd = data[0] & 0xF0;
+        uint8_t pd = (data[0] >> 4);
         _tid = data[0] & 0x0F;
 
-        if (pd != static_cast<uint8_t>(_pd))
+        if (pd != static_cast<uint8_t>(protocolDiscriminator()))
         {
             throw std::runtime_error("CcMessage::parse(): invalid protocol discriminator");
         }
@@ -28,7 +27,10 @@ void CcMessage::parse(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> CcMessage::pack() const
 {
-    return std::vector<uint8_t>({ static_cast<uint8_t>((static_cast<uint8_t>(_pd) << 4) | _tid) });
+    return std::vector<uint8_t>({
+        static_cast<uint8_t>((static_cast<uint8_t>(protocolDiscriminator()) << 4) | _tid),
+        messageType()
+    });
 }
 
 uint8_t CcMessage::transactionId() const
