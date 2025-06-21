@@ -7,6 +7,8 @@
 class AuthGenerator
 {
 public:
+    virtual ~AuthGenerator() = default;
+
     const std::vector<uint8_t>& ki() const;
     const std::vector<uint8_t>& rand() const;
 
@@ -20,7 +22,6 @@ public:
 
 protected:
     AuthGenerator() = default;
-    virtual ~AuthGenerator() = default;
 
     static const size_t SRES_BYTES;
     static const size_t KC_BYTES;

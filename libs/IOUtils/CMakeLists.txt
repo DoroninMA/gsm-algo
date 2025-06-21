@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.17)
 
-set(PROJECT_NAME io_utils)
+set(PROJECT_NAME ioutils)
 
 if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)

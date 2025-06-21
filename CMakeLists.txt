@@ -14,7 +14,10 @@ set(STATISTICS_PROJECT "${PROJECT_SOURCE_DIR}/libs/Statistics")
 set(NETWORK_PROJECT "${PROJECT_SOURCE_DIR}/libs/Network")
 set(HOST_PROJECT "${PROJECT_SOURCE_DIR}/libs/Host")
 set(MOBILE_PROJECT "${PROJECT_SOURCE_DIR}/libs/Mobile")
-set(APP_PROJECT "${PROJECT_SOURCE_DIR}/app")
+set(APP_PROJECT "${PROJECT_SOURCE_DIR}/apps/DataGenerator")
+set(MOBILE_STATION_PROJECT "${PROJECT_SOURCE_DIR}/apps/MobileStation")
+
+set(OUTPUT_DIR "${CMAKE_BINARY_DIR}/apps/")
 
 add_subdirectory("${GSM_CRYPTO_PROJECT}")
 add_subdirectory("${IO_UTILS_PROJECT}")
@@ -24,38 +27,51 @@ add_subdirectory("${NETWORK_PROJECT}")
 add_subdirectory("${HOST_PROJECT}")
 add_subdirectory("${MOBILE_PROJECT}")
 add_subdirectory("${APP_PROJECT}")
+add_subdirectory("${MOBILE_STATION_PROJECT}")
 
 
-target_link_libraries(app
+target_link_libraries(DataGenerator
     PRIVATE
-    gsm_crypto
-    io_utils
-    data_gen
+    gsmcrypto
+    ioutils
+    datagen
     statistics
     network
 )
 
-
-set_target_properties(app PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
+target_link_libraries(MobileStation
+        PRIVATE
+        gsmcrypto
+        ioutils
+        datagen
+        statistics
+        network
 )
 
-set_target_properties(gsm_crypto PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
+set_target_properties(DataGenerator PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/DataGenerator"
 )
 
-set_target_properties(io_utils PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
+set_target_properties(MobileStation PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/MobileStation"
 )
 
-set_target_properties(data_gen PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
+set_target_properties(gsmcrypto PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIR}"
+)
+
+set_target_properties(ioutils PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIR}"
+)
+
+set_target_properties(datagen PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIR}"
 )
 
 set_target_properties(statistics PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
+    LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIR}"
 )
 
 set_target_properties(network PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/app"
+    LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIR}"
 )

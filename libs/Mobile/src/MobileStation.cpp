@@ -1,11 +1,11 @@
-#include <iostream>
 #include <Mobile/MobileStation.h>
 
+#include <iostream>
 #include <stdexcept>
 #include <utility>
 
-#include <Network/Level3/L3MessageFactory.h>
-
+#include "GsmCrypto/Encrypt/EncryptMethodFactory.h"
+#include "Network/Level3/L3MessageFactory.h"
 #include "Network/Level3/CcMessage/ReleaseMessage.h"
 #include "Network/Level3/CcMessage/SetupMessage.h"
 #include "Network/Level3/MmMessage/AuthRequestMessage.h"
@@ -30,25 +30,25 @@ MobileStation::MobileStation(RadioLink& link, const MobileIdentity& imsi, const 
 
         try
         {
-            std::unique_ptr<GsmMessage> msg = MessageFactory::parse(raw);
+            std::unique_ptr<GsmMessage> msg = std::move(MessageFactory::parse(raw));
             switch (msg->messageType())
             {
-                case GsmMsgTypeMM::AUTH_REQUEST:
+                case static_cast<uint8_t>(GsmMsgTypeMM::AUTH_REQUEST):
                     _handleAuthRequest(*msg);
                     break;
-                case GsmMsgTypeMM::LOCATION_UPDATE_REJECT:
+                case static_cast<uint8_t>(GsmMsgTypeMM::LOCATION_UPDATE_REJECT):
                     _handleAuthReject(*msg);
                     break;
-                case GsmMsgTypeMM::CIPHER_MODE_COMMAND:
+                case static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMMAND):
                     _handleCipherModeCommand(*msg);
                     break;
-                // case GsmMsgTypeL3::SETUP:
+                // case static_cast<uint8_t>(GsmMsgTypeMM::SETUP):
                 //     _handleSetup(*msg);
                 //     break;
-                case GsmMsgTypeCC::CONNECT_ACK:
+                case static_cast<uint8_t>(GsmMsgTypeCC::CONNECT_ACK):
                     _handleConnectAcknowledge(*msg);
                     break;
-                case GsmMsgTypeCC::VOICE_FRAME:
+                case static_cast<uint8_t>(GsmMsgTypeCC::VOICE_FRAME):
                     _handleVoiceFrame(*msg);
                     break;
                 default:
@@ -84,13 +84,7 @@ void MobileStation::connectToBts()
 
 std::unique_ptr<EncryptMethod> MobileStation::_createEncryptMethod(uint8_t methodId)
 {
-    switch (methodId)
-    {
-        case
-    }
-
-    // @todo add resolving by id
-    return nullptr;
+    return EncryptMethodFactory::create(methodId);
 }
 
 void MobileStation::_handleAuthRequest(const GsmMessage& msg)

@@ -1,19 +1,11 @@
-﻿#ifndef _GSM_CRYPTO_ENCRYPT_ECNRYPT_A_5_2_H
-#define _GSM_CRYPTO_ENCRYPT_ECNRYPT_A_5_2_H
+﻿#ifndef _GSM_CRYPTO_ENCRYPT_ENCRYPT_A_5_2_H
+#define _GSM_CRYPTO_ENCRYPT_ENCRYPT_A_5_2_H
 
 #include "EcnryptMethod.h"
 
-class EncryptA52 : public EncryptMethod
+class EncryptA52 final : public EncryptMethod
 {
-public:
-    EncryptA52() = default;
-    ~EncryptA52() override = default;
-
-    std::vector<uint8_t> encrypt(const std::vector<uint8_t>& data) override;
-    std::vector<uint8_t> decrypt(const std::vector<uint8_t>& data) override;
-
-private:
-    std::vector<uint8_t> crypt(const std::vector<uint8_t>& data);
+    void _generateKeyStream(const uint8_t* key, uint32_t frameNumber, uint8_t* decBits, uint8_t* encBits) override;
 };
 
 #endif

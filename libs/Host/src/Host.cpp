@@ -25,22 +25,22 @@ Host::Host(RadioLink& link) : _link(link)
             std::unique_ptr<GsmMessage> msg = MessageFactory::parse(data);
             switch (msg->messageType())
             {
-                case GsmMsgTypeMM::LOCATION_UPDATE_REQUEST:
+                case static_cast<uint8_t>(GsmMsgTypeMM::LOCATION_UPDATE_REQUEST):
                     _handleLocationUpdateRequest(*msg);
                     break;
-                case GsmMsgTypeMM::AUTH_RESPONSE:
+                case static_cast<uint8_t>(GsmMsgTypeMM::AUTH_RESPONSE):
                     _handleAuthResponse(*msg);
                     break;
-                case GsmMsgTypeMM::CIPHER_MODE_COMPLETE:
+                case static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMPLETE):
                     _handleCipherModeComplete(*msg);
                     break;
-                case GsmMsgTypeCC::SETUP:
+                case static_cast<uint8_t>(GsmMsgTypeCC::SETUP):
                     _handleSetup(*msg);
                     break;
-                case GsmMsgTypeCC::RELEASE:
+                case static_cast<uint8_t>(GsmMsgTypeCC::RELEASE):
                     _handleRelease(*msg);
                     break;
-                case GsmMsgTypeCC::VOICE_FRAME:
+                case static_cast<uint8_t>(GsmMsgTypeCC::VOICE_FRAME):
                     _handleVoiceFrame(*msg);
                     break;
                 default:
