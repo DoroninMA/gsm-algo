@@ -27,6 +27,7 @@ qt_add_executable(${PROJECT_NAME}
 
     inc/mainwindow.h
     ui/mainwindow.ui
+    resources/resources.qrc
 )
 
 
