@@ -77,17 +77,17 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLineEdit" name="lineEdit"/>
+            <widget class="QLineEdit" name="kiLineEdit"/>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="imsiLabel">
+            <widget class="QLabel" name="identityLabel">
              <property name="text">
-              <string>IMSI/TMSI:</string>
+              <string>Identity:</string>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QLineEdit" name="imsiLabelData"/>
+            <widget class="QLineEdit" name="identityLabelData"/>
            </item>
            <item row="2" column="0">
             <widget class="QLabel" name="randLabel">

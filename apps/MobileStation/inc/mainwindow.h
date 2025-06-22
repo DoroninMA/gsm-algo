@@ -39,8 +39,12 @@ private:
 
     void _init();
 
+    void setImsi(const std::string& imsi);
+    void setKi(const std::string& ki);
+
 private slots:
     void connectBtnActivated();
+    void sendMessage();
 };
 
 #endif // MAINWINDOW_H

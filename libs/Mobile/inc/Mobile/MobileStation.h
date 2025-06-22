@@ -34,6 +34,7 @@ public:
     void connectToBts();
     void disconnectFromBts();
     void sendVoiceData(const VoiceFrame& speech);
+    void sendVoiceData(const std::string& speech);
 
     void setLai(const std::vector<uint8_t>& lai);
     void setReceiveVoiceFrameHandler(std::function<void(const VoiceFrame&)> cb);

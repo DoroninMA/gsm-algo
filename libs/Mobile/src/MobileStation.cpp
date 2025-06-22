@@ -186,6 +186,13 @@ void MobileStation::disconnectFromBts()
     _state = State::IDLE;
 }
 
+void MobileStation::sendVoiceData(const std::string &speech)
+{
+    std::vector<uint8_t> msg(speech.size());
+    std::copy(speech.cbegin(), speech.cend(), msg.begin());
+    sendVoiceData(msg);
+}
+
 void MobileStation::sendVoiceData(const std::vector<uint8_t>& speech)
 {
     if (_state != State::IN_CALL)
