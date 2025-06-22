@@ -18,7 +18,8 @@ public:
     virtual ~ITransport() = default;
 
     virtual void send(const std::vector<uint8_t>& data) = 0;
-    virtual void asyncSend(const std::vector<uint8_t>& data) = 0;
+    virtual void asyncSendRequest(const std::vector<uint8_t>& data) = 0;
+    virtual void asyncSendResponse(const std::vector<uint8_t>& data) = 0;
 
     virtual std::vector<uint8_t> receive() = 0;
     virtual void asyncReceive() = 0;

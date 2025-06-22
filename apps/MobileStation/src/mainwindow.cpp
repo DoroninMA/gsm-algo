@@ -24,7 +24,9 @@ void MainWindow::_init()
     setImsi("001010123456789");
     setKi("");
 
-    _pTransport = std::make_shared<UdpSocket>(_io_context, static_cast<uint16_t>(12345));
+    auto socket = std::make_shared<UdpSocket>(_io_context, static_cast<uint16_t>(12344));
+    socket->setRemote("127.0.0.1", 12345);
+    _pTransport = std::move(socket);
     _pRadioLink = std::make_unique<RadioLink>(_pTransport);
 
     // _pRadioLink->setReceiveHandler(
@@ -113,7 +115,7 @@ void MainWindow::connectBtnActivated()
         std::vector<uint8_t> imsi = _mobileId.pack();
         std::copy(imsi.begin(), imsi.begin() + 3, lai.begin());
         lai[3] = 0x12;
-        lai[4] = 0342;
+        lai[4] = 0x42;
         _pMobileStation->setLai(lai);
 
         try

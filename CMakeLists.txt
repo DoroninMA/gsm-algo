@@ -16,6 +16,7 @@ set(HOST_PROJECT "${PROJECT_SOURCE_DIR}/libs/Host")
 set(MOBILE_PROJECT "${PROJECT_SOURCE_DIR}/libs/Mobile")
 set(APP_PROJECT "${PROJECT_SOURCE_DIR}/apps/DataGenerator")
 set(MOBILE_STATION_PROJECT "${PROJECT_SOURCE_DIR}/apps/MobileStation")
+set(HOST_STATION_PROJECT "${PROJECT_SOURCE_DIR}/apps/HostStation")
 
 set(OUTPUT_DIR "${CMAKE_BINARY_DIR}/apps/")
 
@@ -28,6 +29,7 @@ add_subdirectory("${HOST_PROJECT}")
 add_subdirectory("${MOBILE_PROJECT}")
 add_subdirectory("${APP_PROJECT}")
 add_subdirectory("${MOBILE_STATION_PROJECT}")
+add_subdirectory("${HOST_STATION_PROJECT}")
 
 
 target_link_libraries(DataGenerator
@@ -48,12 +50,24 @@ target_link_libraries(MobileStation
         network
 )
 
+target_link_libraries(HostStation
+        PRIVATE
+        gsmcrypto
+        ioutils
+        host
+        network
+)
+
 set_target_properties(DataGenerator PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/DataGenerator"
 )
 
 set_target_properties(MobileStation PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/MobileStation"
+    RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/MobileStation"
+)
+
+set_target_properties(MobileStation PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/HostStation"
 )
 
 set_target_properties(gsmcrypto PROPERTIES

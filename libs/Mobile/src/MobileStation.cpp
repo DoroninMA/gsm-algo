@@ -79,7 +79,7 @@ void MobileStation::connectToBts()
     LocationUpdateRequest lur;
     lur.setLai(_lai);
     lur.setMobileIdentity(_imsi);
-    _link.send(lur.pack());
+    _link.sendRequest(lur.pack());
 }
 
 std::unique_ptr<EncryptMethod> MobileStation::_createEncryptMethod(uint8_t methodId)
@@ -114,7 +114,7 @@ void MobileStation::_sendAuthResponse(const std::vector<uint8_t>& rand)
 
     AuthResponseMessage resp;
     resp.setSres(sres);
-    _link.send(resp.pack());
+    _link.sendRequest(resp.pack());
 }
 
 void MobileStation::_handleAuthReject(const GsmMessage& msg)
@@ -148,7 +148,7 @@ void MobileStation::_handleCipherModeCommand(const GsmMessage& msg)
 
     // send response
     CipherModeComplete cmcResponse;
-    _link.send(cmcResponse.pack());
+    _link.sendRequest(cmcResponse.pack());
 
     _state = State::CALL_IDLE;
     _sendSetupRequest();
@@ -159,7 +159,7 @@ void MobileStation::_sendSetupRequest()
     // 0x11: ITC=Speech, CS=ITU-T
     // 0x22: Transfer mode=CS (Circuit Switched), Transfer rate=9.6 kbps
     SetupMessage setup({0x11, 0x22}, _imsi.toString(), "");
-    _link.send(setup.pack());
+    _link.sendRequest(setup.pack());
     _state = State::IN_CALL;
 }
 
@@ -181,7 +181,7 @@ void MobileStation::disconnectFromBts()
 
     ReleaseMessage releaseMsg(16); // normal release cause
     releaseMsg.setTransactionId(_transactionId);
-    _link.send(releaseMsg.pack());
+    _link.sendRequest(releaseMsg.pack());
 
     _state = State::IDLE;
 }
@@ -209,7 +209,7 @@ void MobileStation::sendVoiceData(const std::vector<uint8_t>& speech)
     std::vector<uint8_t> encrypted = _pEncryptMethod->encrypt(speech);
     _pEncryptMethod->setFrameNumber(_pEncryptMethod->frameNumber() + 1);
 
-    _link.send(encrypted);
+    _link.sendRequest(encrypted);
 }
 
 void MobileStation::setLai(const std::vector<uint8_t>& lai)

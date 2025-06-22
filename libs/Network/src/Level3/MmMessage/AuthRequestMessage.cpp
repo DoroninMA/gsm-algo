@@ -62,6 +62,7 @@ void AuthRequestMessage::parse(const std::vector<uint8_t>& data)
     }
 
     _rand = Tlv::parse(data, offset);
+    offset += 2 + _rand.length();
     if (_rand.tag() != TLV_RAND_TAG || _rand.length() != 16)
     {
         throw std::runtime_error("AuthRequestMessage: invalid RAND TLV");
@@ -97,7 +98,6 @@ void AuthRequestMessage::setRand(const std::vector<uint8_t>& rand)
 std::vector<uint8_t> AuthRequestMessage::pack() const
 {
     std::vector<uint8_t> out = MmMessage::pack();
-    out.push_back(messageType());
 
     if (_rand.tag() != TLV_RAND_TAG || _rand.length() != 16)
     {

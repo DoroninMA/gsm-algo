@@ -10,7 +10,9 @@ class RadioLink {
 public:
     explicit RadioLink(std::shared_ptr<ITransport> transport);
 
-    void send(const std::vector<uint8_t>& data);
+    void sendRequest(const std::vector<uint8_t>& data);
+    void sendResponse(const std::vector<uint8_t>& data);
+
     void receive() const;
 
     void setReceiveHandler(ITransport::ReceiveHandler handler);

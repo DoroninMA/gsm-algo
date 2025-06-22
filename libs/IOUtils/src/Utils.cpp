@@ -3,7 +3,7 @@
 
 #include <IOUtils/Utils.h>
 
-std::string bytesToHexString(const uint8_t* str, size_t bytes)
+std::string _bytesToHexString(const uint8_t* str, size_t bytes)
 {
     static const char hexChars[] = "0123456789ABCDEF";
     std::string result;

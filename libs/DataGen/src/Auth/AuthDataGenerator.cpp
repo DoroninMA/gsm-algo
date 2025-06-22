@@ -89,8 +89,8 @@ void AuthDataGenerator::_writeGenResult(const std::string& genResult)
 {
     if ((_pCsvWriter != nullptr) && _pCsvWriter->isOpen())
     {
-        std::string kiHexString = bytesToHexString(_ki.data(), _ki.size());
-        std::string randHexString = bytesToHexString(_rand.data(), _rand.size());
+        std::string kiHexString = _bytesToHexString(_ki.data(), _ki.size());
+        std::string randHexString = _bytesToHexString(_rand.data(), _rand.size());
 
         _pCsvWriter->writeRow(
             CsvRow().addColumn(kiHexString)
@@ -110,11 +110,11 @@ void AuthDataGenerator::_writeGenResult(const std::vector<uint8_t>& genResult)
     if ((_pCsvWriter != nullptr) && _pCsvWriter->isOpen())
     {
         std::string kiHexString = 
-            bytesToHexString(_ki.data(), _ki.size());
+            _bytesToHexString(_ki.data(), _ki.size());
         std::string randHexString = 
-            bytesToHexString(_rand.data(), _rand.size());
+            _bytesToHexString(_rand.data(), _rand.size());
         std::string genResultHexString = 
-            bytesToHexString(genResult.data(), genResult.size());
+            _bytesToHexString(genResult.data(), genResult.size());
 
         _pCsvWriter->writeRow(
             CsvRow().addColumn(kiHexString)

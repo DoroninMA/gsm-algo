@@ -8,9 +8,14 @@ void RadioLink::setReceiveHandler(ITransport::ReceiveHandler handler)
 RadioLink::RadioLink(std::shared_ptr<ITransport> transport): _transport(std::move(transport))
 {}
 
-void RadioLink::send(const std::vector<uint8_t>& data)
+void RadioLink::sendRequest(const std::vector<uint8_t>& data)
 {
-    _transport->asyncSend(data);
+    _transport->asyncSendRequest(data);
+}
+
+void RadioLink::sendResponse(const std::vector<uint8_t>& data)
+{
+    _transport->asyncSendResponse(data);
 }
 
 void RadioLink::receive() const

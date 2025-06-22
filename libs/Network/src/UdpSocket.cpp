@@ -22,10 +22,24 @@ void UdpSocket::send(const std::vector<uint8_t>& data)
     _socket.send_to(boost::asio::buffer(data), _remoteEndpoint);
 }
 
-void UdpSocket::asyncSend(const std::vector<uint8_t>& data)
+void UdpSocket::asyncSendRequest(const std::vector<uint8_t>& data)
 {
     _socket.async_send_to(
         boost::asio::buffer(data), _remoteEndpoint,
+        [this](const boost::system::error_code& ec, size_t bytes)
+        {
+            if (_sendHandler)
+            {
+                _sendHandler(_toStdError(ec), bytes);
+            }
+        }
+    );
+}
+
+void UdpSocket::asyncSendResponse(const std::vector<uint8_t>& data)
+{
+    _socket.async_send_to(
+        boost::asio::buffer(data), _lastSenderEndpoint,
         [this](const boost::system::error_code& ec, size_t bytes)
         {
             if (_sendHandler)
@@ -59,6 +73,11 @@ void UdpSocket::asyncReceive()
                 _receiveHandler(_toStdError(ec), bytes, data,
                                 _lastSenderEndpoint.address().to_string(),
                                 _lastSenderEndpoint.port());
+            }
+
+            if (!ec)
+            {
+                this->asyncReceive();
             }
         }
     );

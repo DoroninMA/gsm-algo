@@ -23,7 +23,8 @@ public:
     void setRemote(const std::string& remoteAddress, uint16_t remotePort);
 
     void send(const std::vector<uint8_t>& data) override;
-    void asyncSend(const std::vector<uint8_t>& data) override;
+    void asyncSendRequest(const std::vector<uint8_t>& data) override;
+    void asyncSendResponse(const std::vector<uint8_t>& data);
 
     std::vector<uint8_t> receive() override;
     void asyncReceive() override;
