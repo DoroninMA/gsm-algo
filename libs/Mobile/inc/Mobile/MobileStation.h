@@ -38,7 +38,7 @@ public:
 
     void setLai(const std::vector<uint8_t>& lai);
     void setReceiveVoiceFrameHandler(std::function<void(const VoiceFrame&)> cb);
-    void setAuthGenerator(std::unique_ptr<AuthGenerator>& pAuthGenerator);
+    void setAuthGenerator(std::unique_ptr<AuthGenerator>&& pAuthGenerator);
 
 private:
     RadioLink& _link;

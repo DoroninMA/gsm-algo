@@ -1,5 +1,6 @@
 #include <Network/Level3/CcMessage/ConnectAck.h>
 
+#include <iostream>
 #include <stdexcept>
 
 uint8_t ConnectAck::messageType() const
@@ -9,6 +10,7 @@ uint8_t ConnectAck::messageType() const
 
 std::vector<uint8_t> ConnectAck::pack() const
 {
+    std::cout << "ConnectAck::pack\n";
     std::vector<uint8_t> out = CcMessage::pack();
     out.push_back(messageType());
     return out;
@@ -16,6 +18,8 @@ std::vector<uint8_t> ConnectAck::pack() const
 
 void ConnectAck::parse(const std::vector<uint8_t>& data)
 {
+    std::cout << "ConnectAck::parse\n";
+
     CcMessage::parse(data);
     if (data.size() < 2)
     {

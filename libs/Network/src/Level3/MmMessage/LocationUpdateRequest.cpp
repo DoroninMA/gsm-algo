@@ -1,5 +1,6 @@
 #include <Network/Level3/MmMessage/LocationUpdateRequest.h>
 
+#include <iostream>
 #include <stdexcept>
 
 LocationUpdateRequest::LocationUpdateRequest()
@@ -78,6 +79,8 @@ void LocationUpdateRequest::setCipherKeySeqNum(uint8_t seq)
 
 void LocationUpdateRequest::parse(const std::vector<uint8_t>& data)
 {
+    std::cout << "LocationUpdateRequest::parse\n";
+
     MmMessage::parse(data);
 
     size_t offset = 1;
@@ -115,6 +118,8 @@ void LocationUpdateRequest::parse(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> LocationUpdateRequest::pack() const
 {
+    std::cout << "LocationUpdateRequest::pack\n";
+
     std::vector<uint8_t> result = MmMessage::pack();
 
     result.push_back(messageType());

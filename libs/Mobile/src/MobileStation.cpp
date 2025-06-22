@@ -222,7 +222,7 @@ void MobileStation::setReceiveVoiceFrameHandler(std::function<void(const VoiceFr
     _voiceCb = std::move(cb);
 }
 
-void MobileStation::setAuthGenerator(std::unique_ptr<AuthGenerator>& pAuthGenerator)
+void MobileStation::setAuthGenerator(std::unique_ptr<AuthGenerator>&& pAuthGenerator)
 {
     _pAuthGenerator = std::move(pAuthGenerator);
 }

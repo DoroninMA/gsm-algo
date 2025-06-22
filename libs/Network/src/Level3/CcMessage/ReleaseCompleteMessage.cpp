@@ -1,5 +1,6 @@
 #include "Network/Level3/CcMessage/ReleaseCompleteMessage.h"
 
+#include <iostream>
 #include <stdexcept>
 
 uint8_t ReleaseCompleteMessage::messageType() const
@@ -9,6 +10,8 @@ uint8_t ReleaseCompleteMessage::messageType() const
 
 void ReleaseCompleteMessage::parse(const std::vector<uint8_t>& data)
 {
+    std::cout << "ReleaseCompleteMessage::pack\n";
+
     CcMessage::parse(data);
 
     if (data.size() < 2)
@@ -25,6 +28,7 @@ void ReleaseCompleteMessage::parse(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> ReleaseCompleteMessage::pack() const
 {
+    std::cout << "ReleaseCompleteMessage::parse\n";
     std::vector<uint8_t> out = CcMessage::pack();
     out.push_back(messageType());
     return out;

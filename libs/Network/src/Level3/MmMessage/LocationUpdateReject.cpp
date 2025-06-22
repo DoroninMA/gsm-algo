@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdexcept>
 #include <Network/Level3/MmMessage/LocationUpdateReject.h>
 
@@ -25,6 +26,8 @@ uint8_t LocationUpdateReject::messageType() const
 
 std::vector<uint8_t> LocationUpdateReject::pack() const
 {
+    std::cout << "LocationUpdateReject::pack\n";
+
     std::vector<uint8_t> out = MmMessage::pack();
     std::vector<uint8_t> causeEnc = _cause.pack();
     out.insert(out.end(), causeEnc.begin(), causeEnc.end());
@@ -33,6 +36,8 @@ std::vector<uint8_t> LocationUpdateReject::pack() const
 
 void LocationUpdateReject::parse(const std::vector<uint8_t>& data)
 {
+    std::cout << "LocationUpdateReject::parse\n";
+
     if (data.size() < 4)
     {
         throw std::runtime_error("LocationUpdateReject: Invalid size");

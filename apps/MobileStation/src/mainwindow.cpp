@@ -3,6 +3,8 @@
 
 #include <Network/Bcd.h>
 
+#include <GsmCrypto/Auth/AuthComp1281.h>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -109,6 +111,7 @@ void MainWindow::connectBtnActivated()
     if (!_isConnected)
     {
         _pMobileStation = std::make_unique<MobileStation>(*_pRadioLink, _mobileId, _ki);
+        _pMobileStation->setAuthGenerator(std::make_unique<Comp1281>());
 
         // set LAI
         std::vector<uint8_t> lai(5);

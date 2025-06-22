@@ -1,5 +1,6 @@
 #include <Network/Level3/MmMessage/AuthResponse.h>
 
+#include <iostream>
 #include <stdexcept>
 #include "Network/GsmDefs.h"
 
@@ -27,8 +28,10 @@ void AuthResponseMessage::setSres(const std::vector<uint8_t>& sresData)
 
 void AuthResponseMessage::parse(const std::vector<uint8_t>& data)
 {
+    std::cout << "AuthResponseMessage::parse\n";
+
     MmMessage::parse(data);
-    size_t offset = 1;
+    size_t offset = 2;
 
     if (data.size() <= offset)
     {
@@ -50,6 +53,8 @@ void AuthResponseMessage::parse(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> AuthResponseMessage::pack() const
 {
+    std::cout << "AuthResponseMessage::pack\n";
+
     if (_sres.tag() != TLV_KC_TAG || _sres.length() != 4)
     {
         throw std::runtime_error("AuthResponseMessage: SRES must be 4 bytes");

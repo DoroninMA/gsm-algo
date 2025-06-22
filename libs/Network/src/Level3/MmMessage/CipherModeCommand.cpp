@@ -1,5 +1,6 @@
 #include <Network/Level3/MmMessage/CipherModeCommand.h>
 
+#include <iostream>
 #include <stdexcept>
 #include "Network/GsmDefs.h"
 
@@ -58,19 +59,21 @@ void CipherModeCommand::setMobileIdentity(const std::vector<uint8_t>& mi)
 
 void CipherModeCommand::parse(const std::vector<uint8_t>& data)
 {
+    std::cout << "CipherModeCommand::parse\n";
+
     MmMessage::parse(data);
 
-    size_t offset = 1;
+    size_t offset = 2;
     if (data.size() < 4)
     {
         throw std::runtime_error("CipherModeCommand: data too short");
     }
 
-    uint8_t msgType = data[offset++];
-    if (msgType != messageType())
-    {
-        throw std::runtime_error("CipherModeCommand: wrong message type");
-    }
+    // uint8_t msgType = data[offset++];
+    // if (msgType != messageType())
+    // {
+    //     throw std::runtime_error("CipherModeCommand: wrong message type");
+    // }
 
     _cipherAlgorithm = data[offset++];
     _keySequence = data[offset++];
@@ -93,8 +96,9 @@ void CipherModeCommand::parse(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> CipherModeCommand::pack() const
 {
+    std::cout << "CipherModeCommand::pack\n";
+
     std::vector<uint8_t> out = MmMessage::pack();
-    out.push_back(messageType());
     out.push_back(_cipherAlgorithm);
     out.push_back(_keySequence);
 

@@ -1,6 +1,7 @@
 #include <Network/Level3/CcMessage/SetupMessage.h>
 #include <Network/Bcd.h>
 
+#include <iostream>
 #include <stdexcept>
 
 static constexpr uint8_t TLV_BEARER_CAP_TAG = 0x04;
@@ -66,38 +67,35 @@ void SetupMessage::setCallingPartyNumber(const std::string& num)
 
 std::vector<uint8_t> SetupMessage::pack() const
 {
-    std::vector<uint8_t> out = CcMessage::pack();
-    out.push_back(messageType());
+    std::cout << "SetupMessage::pack\n";
 
-    // bearerCapability
+    std::vector<uint8_t> out = CcMessage::pack();
+    // out.push_back(messageType());
+
+    // bearer capability
     std::vector<uint8_t> bcPacked = _bearerCapability.pack();
     out.insert(out.end(), bcPacked.begin(), bcPacked.end());
 
-    // BCD to TLV converter
-    auto encodeBcdTlv = [](const uint8_t& tag, const std::string& number) -> std::vector<uint8_t>
-    {
-        std::string digits;
-        for (char c: number)
+    // bcd number
+    auto encodeBcdTlv = [](uint8_t tag, const std::string& number) {
+        for (char c : number)
         {
             if (!std::isdigit(static_cast<unsigned char>(c)))
-            {
-                throw std::runtime_error("SetupMessage: non-digit character in phone number");
-            }
-            digits.push_back(c - '0');
+                throw std::runtime_error("Non-digit character in phone number");
         }
-        std::vector<uint8_t> bcd = Bcd::pack(digits);
+        std::vector<uint8_t> bcd = Bcd::pack(number);
         return Tlv(tag, bcd).pack();
     };
 
-    // calledPartyNumber
-    std::vector<uint8_t> calledEnc = encodeBcdTlv(TLV_CALLED_NUMBER_TAG, _calledPartyNumber);
-    out.insert(out.end(), calledEnc.begin(), calledEnc.end());
+    out.insert(out.end(),
+               encodeBcdTlv(TLV_CALLED_NUMBER_TAG, _calledPartyNumber).begin(),
+               encodeBcdTlv(TLV_CALLED_NUMBER_TAG, _calledPartyNumber).end());
 
-    // callingPartyNumber
     if (_isCallingPartyExist)
     {
-        std::vector<uint8_t> callingEnc = encodeBcdTlv(TLV_CALLING_NUMBER_TAG, _callingPartyNumber);
-        out.insert(out.end(), callingEnc.begin(), callingEnc.end());
+        out.insert(out.end(),
+                   encodeBcdTlv(TLV_CALLING_NUMBER_TAG, _callingPartyNumber).begin(),
+                   encodeBcdTlv(TLV_CALLING_NUMBER_TAG, _callingPartyNumber).end());
     }
 
     return out;
@@ -105,9 +103,11 @@ std::vector<uint8_t> SetupMessage::pack() const
 
 void SetupMessage::parse(const std::vector<uint8_t>& data)
 {
-    size_t offset = 0;
+    std::cout << "SetupMessage::pack\n";
+
+    // size_t offset = 0;
     CcMessage::parse(data);
-    offset++;
+    size_t offset = 2;
 
     if (offset >= data.size())
     {

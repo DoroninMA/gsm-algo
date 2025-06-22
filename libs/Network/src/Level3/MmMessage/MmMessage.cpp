@@ -10,7 +10,7 @@ GsmMessagePD MmMessage::protocolDiscriminator() const
 void MmMessage::parse(const std::vector<uint8_t>& data)
 {
     if (data.size() < sizeof(protocolDiscriminator()) ||
-        (data[0] != static_cast<uint8_t>(protocolDiscriminator())))
+        ((data[0] >> 4) != static_cast<uint8_t>(protocolDiscriminator())))
     {
         throw std::runtime_error("MmMessage::parse(): invalid message protocol discriminator");
     }
@@ -18,5 +18,7 @@ void MmMessage::parse(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> MmMessage::pack() const
 {
-    return { static_cast<uint8_t>(protocolDiscriminator()), messageType() };
+    uint8_t pd = static_cast<uint8_t>(protocolDiscriminator());
+    pd = (pd << 4) & 0xF0;
+    return { pd, messageType() };
 }

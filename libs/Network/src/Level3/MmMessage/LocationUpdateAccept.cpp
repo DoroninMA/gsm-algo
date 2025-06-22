@@ -1,5 +1,6 @@
 #include <Network/Level3/MmMessage/LocationUpdateAccept.h>
 
+#include <iostream>
 #include <stdexcept>
 
 LocationUpdateAccept::LocationUpdateAccept(const std::vector<uint8_t>& lai)
@@ -29,6 +30,8 @@ uint8_t LocationUpdateAccept::messageType() const
 
 std::vector<uint8_t> LocationUpdateAccept::pack() const
 {
+    std::cout << "LocationUpdateAccept::pack\n";
+
     std::vector<uint8_t> out = MmMessage::pack();
     out.insert(out.end(), _lai.cbegin(), _lai.cend());
     return out;
@@ -36,6 +39,8 @@ std::vector<uint8_t> LocationUpdateAccept::pack() const
 
 void LocationUpdateAccept::parse(const std::vector<uint8_t>& data)
 {
+    std::cout << "LocationUpdateAccept::parse\n";
+
     if (data.size() < 7)
     {
         throw std::runtime_error("LocationUpdateAccept: invalid size");

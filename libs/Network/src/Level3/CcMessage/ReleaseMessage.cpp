@@ -1,5 +1,6 @@
 #include <Network/Level3/CcMessage/ReleaseMessage.h>
 
+#include <iostream>
 #include <stdexcept>
 
 static constexpr uint8_t TLV_CAUSE_TAG = 0x08;
@@ -31,6 +32,8 @@ uint8_t ReleaseMessage::cause() const
 
 std::vector<uint8_t> ReleaseMessage::pack() const
 {
+    std::cout << "ReleaseMessage::pack\n";
+
     std::vector<uint8_t> out = CcMessage::pack();
     std::vector<uint8_t> causeEnc = _cause.pack();
     out.insert(out.end(), causeEnc.cbegin(), causeEnc.cend());
@@ -39,6 +42,8 @@ std::vector<uint8_t> ReleaseMessage::pack() const
 
 void ReleaseMessage::parse(const std::vector<uint8_t>& data)
 {
+    std::cout << "ReleaseMessage::parse\n";
+
     CcMessage::parse(data);
 
     size_t offset = 1;

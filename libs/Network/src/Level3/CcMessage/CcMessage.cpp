@@ -27,10 +27,14 @@ void CcMessage::parse(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> CcMessage::pack() const
 {
-    return std::vector<uint8_t>({
-        static_cast<uint8_t>((static_cast<uint8_t>(protocolDiscriminator()) << 4) | _tid),
-        messageType()
-    });
+    std::vector<uint8_t> out;
+
+    // Добавляем корректный CC-заголовок: PD/TI + MessageType
+    out.push_back(static_cast<uint8_t>(
+        ((static_cast<uint8_t>(protocolDiscriminator()) & 0x0F) << 4) | (_tid & 0x0F)));
+    out.push_back(messageType());
+
+    return out;
 }
 
 uint8_t CcMessage::transactionId() const

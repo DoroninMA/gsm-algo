@@ -168,6 +168,7 @@ void Host::_handleAuthResponse(const GsmMessage& msg)
     }
 
     LocationUpdateAccept acceptMsg;
+    acceptMsg.setLai(lai());
     _link.sendResponse(acceptMsg.pack());
 
     CipherModeCommand cmd;

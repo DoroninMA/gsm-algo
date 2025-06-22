@@ -1,5 +1,6 @@
 #include <Network/Level3/MmMessage/CipherModeComplete.h>
 
+#include <iostream>
 #include <stdexcept>
 
 static constexpr uint8_t TLV_MI_TAG = 0x22; // Mobile Identity
@@ -31,6 +32,8 @@ std::vector<uint8_t> CipherModeComplete::mobileIdentity() const
 
 void CipherModeComplete::parse(const std::vector<uint8_t>& data)
 {
+    std::cout << "CipherModeComplete::parse\n";
+
     size_t offset = 0;
     MmMessage::parse(data);
     offset++;
@@ -65,6 +68,8 @@ void CipherModeComplete::parse(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> CipherModeComplete::pack() const
 {
+    std::cout << "CipherModeComplete::pack\n";
+
     std::vector<uint8_t> out = MmMessage::pack();
     out.push_back(messageType());
 

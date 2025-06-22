@@ -1,5 +1,6 @@
 #include <Network/Level3/MmMessage/AuthRequestMessage.h>
 
+#include <iostream>
 #include <stdexcept>
 #include "Network/GsmDefs.h"
 
@@ -40,6 +41,8 @@ uint8_t AuthRequestMessage::messageType() const
 
 void AuthRequestMessage::parse(const std::vector<uint8_t>& data)
 {
+    std::cout << "AuthRequestMessage::parse\n";
+
     size_t offset = 0;
 
     MmMessage::parse(data);
@@ -97,6 +100,8 @@ void AuthRequestMessage::setRand(const std::vector<uint8_t>& rand)
 
 std::vector<uint8_t> AuthRequestMessage::pack() const
 {
+    std::cout << "AuthRequestMessage::pack\n";
+
     std::vector<uint8_t> out = MmMessage::pack();
 
     if (_rand.tag() != TLV_RAND_TAG || _rand.length() != 16)

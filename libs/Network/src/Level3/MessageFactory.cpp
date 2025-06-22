@@ -2,6 +2,9 @@
 
 #include <stdexcept>
 
+#include <Network/Level3/MmMessage/LocationUpdateAccept.h>
+#include <Network/Level3/MmMessage/LocationUpdateReject.h>
+
 #include "Network/Level3/CcMessage/SetupMessage.h"
 
 #include "Network/Level3/MmMessage/AuthRequestMessage.h"
@@ -17,7 +20,7 @@ std::unique_ptr<GsmMessage> MessageFactory::parse(const std::vector<uint8_t>& da
         throw std::runtime_error("MessageFactory: data too short");
     }
 
-    uint8_t pd = data[0];
+    uint8_t pd = data[0] >> 4;
     uint8_t messageType = data[1];
 
     std::unique_ptr<GsmMessage> message;
@@ -31,14 +34,20 @@ std::unique_ptr<GsmMessage> MessageFactory::parse(const std::vector<uint8_t>& da
                 message = std::make_unique<AuthRequestMessage>();
                 break;
             case static_cast<uint8_t>(GsmMsgTypeMM::AUTH_RESPONSE):
-                    message = std::make_unique<AuthResponseMessage>();
-                    break;
+                message = std::make_unique<AuthResponseMessage>();
+                break;
             case static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMMAND):
-                    message = std::make_unique<CipherModeCommand>();
-                    break;
+                message = std::make_unique<CipherModeCommand>();
+                break;
             case static_cast<uint8_t>(GsmMsgTypeMM::LOCATION_UPDATE_REQUEST):
-                    message = std::make_unique<LocationUpdateRequest>();
-                    break;
+                message = std::make_unique<LocationUpdateRequest>();
+                break;
+            case static_cast<uint8_t>(GsmMsgTypeMM::LOCATION_UPDATE_ACCEPT):
+                message = std::make_unique<LocationUpdateAccept>();
+                break;
+            case static_cast<uint8_t>(GsmMsgTypeMM::LOCATION_UPDATE_REJECT):
+                message = std::make_unique<LocationUpdateReject>();
+                break;
             default:
                 throw std::runtime_error("MessageFactory: Unknown MM message type");
             }
