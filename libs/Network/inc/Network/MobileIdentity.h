@@ -5,9 +5,11 @@
 #include <cstdint>
 #include <string>
 
-class MobileIdentity {
+class MobileIdentity
+{
 public:
-    enum class Type : uint8_t {
+    enum class Type : uint8_t
+    {
         IMSI = 0x01,
         IMEI = 0x02,
         TMSI = 0x04

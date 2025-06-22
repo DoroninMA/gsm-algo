@@ -19,5 +19,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     inc
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE network)
-target_link_libraries(${PROJECT_NAME} PRIVATE gsmcrypto)
+target_link_libraries(${PROJECT_NAME} PUBLIC network gsmcrypto)

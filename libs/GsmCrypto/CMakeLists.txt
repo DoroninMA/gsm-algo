@@ -12,6 +12,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 file(GLOB gsm_crypto_src CONFIGURE_DEPENDS
     "src/*.c"
     "src/*.cpp"
+    "src/Auth/*.cpp"
+    "src/Encrypt/*.cpp"
     "src/utils/*.cpp"
     "src/utils/*.c"
 )

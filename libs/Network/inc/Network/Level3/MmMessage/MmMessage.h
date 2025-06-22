@@ -12,7 +12,7 @@ public:
     std::vector<uint8_t> pack() const override;
 
 protected:
-    MmMessage();
+    MmMessage() = default;
 };
 
 #endif
