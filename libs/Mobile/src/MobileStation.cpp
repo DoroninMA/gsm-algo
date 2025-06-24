@@ -228,9 +228,15 @@ void MobileStation::sendVoiceData(const std::vector<uint8_t>& speech)
 
     // encode message
     std::vector<uint8_t> encrypted = _pEncryptMethod->encrypt(speech);
-    _pEncryptMethod->setFrameNumber(_pEncryptMethod->frameNumber() + 1);
+    std::cout << "======= RECEIVE VOICE ==========" << std::endl;
+    std::cout << "Input: " << _bytesToHexString(speech.data(), speech.size()) << std::endl;
+    std::cout << "Encrypted: " << _bytesToHexString(encrypted.data(), encrypted.size()) << std::endl;
+    std::cout << "KC: " << _bytesToHexString(_pEncryptMethod->kc().data(), _pEncryptMethod->kc().size()) << std::endl;
+    std::cout << "Fn: " << _pEncryptMethod->frameNumber() << std::endl;
+    std::cout << "================================" << std::endl;
 
-    _link.sendRequest(encrypted);
+    VoiceMessage voiceMsg(encrypted);
+    _link.sendRequest(voiceMsg.pack());
 }
 
 void MobileStation::setLai(const std::vector<uint8_t>& lai)
@@ -259,7 +265,6 @@ void MobileStation::_handleVoiceFrame(const GsmMessage& msg)
 
     // decode message
     std::vector<uint8_t> decrypted = _pEncryptMethod->decrypt(voice.voiceData());
-    _pEncryptMethod->setFrameNumber(_pEncryptMethod->frameNumber() + 1);
 
     if (_voiceCb)
     {

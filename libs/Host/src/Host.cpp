@@ -250,9 +250,16 @@ void Host::_handleVoiceFrame(const GsmMessage& msg)
     }
 
     auto& voice = static_cast<const VoiceMessage&>(msg);
+    // const std::vector<uint8_t> decrypted = _pEncrypt->decrypt(voice.voiceData());
+    const std::vector<uint8_t> decrypted = _pEncrypt->encrypt(voice.voiceData());
 
-    const std::vector<uint8_t> decrypted = _pEncrypt->decrypt(voice.voiceData());
-    _pEncrypt->setFrameNumber(_pEncrypt->frameNumber() + 1);
+    const auto& voiceData = voice.voiceData();
+    std::cout << "======= RECEIVE VOICE ==========" << std::endl;
+    std::cout << "Encrypted: " << _bytesToHexString(voiceData.data(), voiceData.size()) << std::endl;
+    std::cout << "Decrypted: " << _bytesToHexString(decrypted.data(), decrypted.size()) << std::endl;
+    std::cout << "KC: " << _bytesToHexString(_pEncrypt->kc().data(), _pEncrypt->kc().size()) << std::endl;
+    std::cout << "Fn: " << _pEncrypt->frameNumber() << std::endl;
+    std::cout << "================================" << std::endl;
 
     if (_voiceCb)
     {

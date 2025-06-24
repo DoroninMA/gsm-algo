@@ -30,7 +30,7 @@ enum class GsmMessagePD : uint8_t
     CALL_CONTROL = 0x01,
     MOBILITY_MANAGEMENT = 0x02,
     RADIO_RESOURCE_MANAGEMENT = 0x06,
-    TRAFIC_CHANNEL = 0xFF,
+    TRAFIC_CHANNEL = 0x0F,
 };
 
 enum class GsmLurCause : uint8_t

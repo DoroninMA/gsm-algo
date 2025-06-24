@@ -31,8 +31,8 @@ private:
     std::vector<uint8_t> _kc;
     uint32_t _frameNumber = 0;
 
-    std::vector<uint8_t> _encBitKeystreamBuf;
-    std::vector<uint8_t> _decBitKeystreamBuf;
+    std::vector<uint8_t> _encBitKeystreamBuf{};
+    std::vector<uint8_t> _decBitKeystreamBuf{};
 
     std::vector<uint8_t> _process(const std::vector<uint8_t>& data, Direction dir);
 };

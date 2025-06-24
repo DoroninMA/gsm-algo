@@ -1,6 +1,9 @@
 #include <GsmCrypto/Encrypt/EcnryptMethod.h>
 
 #include <array>
+#include <iostream>
+
+#include "IOUtils/Utils.h"
 
 const std::vector<uint8_t>& EncryptMethod::kc() const
 {
@@ -43,6 +46,11 @@ std::vector<uint8_t> EncryptMethod::_process(const std::vector<uint8_t>& data, D
     {
         std::array<uint8_t, 114> decrypt, encrypt;
         _generateKeyStream(_kc.data(), _frameNumber++, decrypt.data(), encrypt.data());
+
+        std::cout << "DEBUG EncryptMethod" << std::endl;
+        std::cout << _bytesToHexString(decrypt.data(), decrypt.size()) << std::endl;
+        std::cout << _bytesToHexString(encrypt.data(), encrypt.size()) << std::endl;
+        std::cout << "END DEBUG EncryptMethod" << std::endl;
 
         if (dir == Direction::Uplink)
         {
