@@ -7,22 +7,19 @@
 class CipherModeComplete final : public MmMessage
 {
 public:
-    static constexpr uint8_t TLV_MOBILE_IDENTITY_TAG = 0x17;
-
     CipherModeComplete();
 
     uint8_t messageType() const override;
-    bool isMobileIdentityExist() const;
-    std::vector<uint8_t> mobileIdentity() const;
+    uint8_t cryptoAlgoId() const;
+    bool isCryptoAlgoIdExist() const;
 
-    void parse(const std::vector<uint8_t>& data) override;
     std::vector<uint8_t> pack() const override;
+    void parse(const std::vector<uint8_t>& data) override;
 
-    void setMobileIdentity(const std::vector<uint8_t>& mi);
+    void setCryptoAlgoId(uint8_t cryptoAlgoId);
 
 private:
-    bool _isMobileIdentityExist;
-    Tlv _mobileIdentity;
+    uint8_t _cryptoAlgoId;
 };
 
 #endif

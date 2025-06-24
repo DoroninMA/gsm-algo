@@ -1,6 +1,8 @@
 #include <Network/Level3/CcMessage/SetupMessage.h>
 #include <Network/Bcd.h>
 
+#include <IOUtils/Utils.h>
+
 #include <iostream>
 #include <stdexcept>
 
@@ -70,32 +72,33 @@ std::vector<uint8_t> SetupMessage::pack() const
     std::cout << "SetupMessage::pack\n";
 
     std::vector<uint8_t> out = CcMessage::pack();
-    // out.push_back(messageType());
 
-    // bearer capability
-    std::vector<uint8_t> bcPacked = _bearerCapability.pack();
-    out.insert(out.end(), bcPacked.begin(), bcPacked.end());
+    std::cout << "=============== SetupMessage =============" << std::endl;
+    std::cout << "Bearer: " <<
+        _bytesToHexString(_bearerCapability.value().data(), _bearerCapability.value().size()) << std::endl;
+    std::cout << "CalledParty: " << _calledPartyNumber << std::endl;
+    if (isCallingPartyNumberExist())
+    {
+        std::cout << "CallingParty: " << _callingPartyNumber << std::endl;
+    }
+    std::cout << "==========================================" << std::endl;
 
     // bcd number
     auto encodeBcdTlv = [](uint8_t tag, const std::string& number) {
-        for (char c : number)
-        {
-            if (!std::isdigit(static_cast<unsigned char>(c)))
-                throw std::runtime_error("Non-digit character in phone number");
-        }
         std::vector<uint8_t> bcd = Bcd::pack(number);
         return Tlv(tag, bcd).pack();
     };
 
-    out.insert(out.end(),
-               encodeBcdTlv(TLV_CALLED_NUMBER_TAG, _calledPartyNumber).begin(),
-               encodeBcdTlv(TLV_CALLED_NUMBER_TAG, _calledPartyNumber).end());
+    std::vector<uint8_t> bcEncoded = _bearerCapability.pack();
+    std::vector<uint8_t> calledPNEncoded = encodeBcdTlv(TLV_CALLED_NUMBER_TAG, _calledPartyNumber);
+
+    out.insert(out.end(), bcEncoded.cbegin(), bcEncoded.cend());
+    out.insert(out.end(), calledPNEncoded.cbegin(), calledPNEncoded.cend());
 
     if (_isCallingPartyExist)
     {
-        out.insert(out.end(),
-                   encodeBcdTlv(TLV_CALLING_NUMBER_TAG, _callingPartyNumber).begin(),
-                   encodeBcdTlv(TLV_CALLING_NUMBER_TAG, _callingPartyNumber).end());
+        std::vector<uint8_t> callingPNEncoded = encodeBcdTlv(TLV_CALLING_NUMBER_TAG, _callingPartyNumber);
+        out.insert(out.end(), callingPNEncoded.cbegin(), callingPNEncoded.cend());
     }
 
     return out;
@@ -103,22 +106,10 @@ std::vector<uint8_t> SetupMessage::pack() const
 
 void SetupMessage::parse(const std::vector<uint8_t>& data)
 {
-    std::cout << "SetupMessage::pack\n";
+    std::cout << "SetupMessage::parse\n";
 
-    // size_t offset = 0;
     CcMessage::parse(data);
     size_t offset = 2;
-
-    if (offset >= data.size())
-    {
-        throw std::runtime_error("SetupMessage: missing message type");
-    }
-
-    uint8_t msgType = data[offset++];
-    if (msgType != messageType())
-    {
-        throw std::runtime_error("SetupMessage: wrong message type");
-    }
 
     Tlv bc = Tlv::parse(data, offset);
     if (bc.tag() != TLV_BEARER_CAP_TAG)
@@ -127,6 +118,7 @@ void SetupMessage::parse(const std::vector<uint8_t>& data)
     }
 
     _bearerCapability = bc;
+    offset += _bearerCapability.length() + 2;
 
     // decode called party number IE
     Tlv calledTlv = Tlv::parse(data, offset);
@@ -136,15 +128,9 @@ void SetupMessage::parse(const std::vector<uint8_t>& data)
     }
 
     // called party
-    {
-        const std::string digits = Bcd::parse(calledTlv.value());
-        _calledPartyNumber.clear();
-
-        for (auto d: digits)
-        {
-            _calledPartyNumber.push_back('0' + d);
-        }
-    }
+    const std::string digits = Bcd::parse(calledTlv.value());
+    _calledPartyNumber.clear();
+    offset += _calledPartyNumber.length() + 2;
 
     // optional calling party number
     if (offset < data.size())
@@ -152,17 +138,7 @@ void SetupMessage::parse(const std::vector<uint8_t>& data)
         const Tlv callingTlv = Tlv::parse(data, offset);
         if (callingTlv.tag() == TLV_CALLING_NUMBER_TAG)
         {
-            {
-                const std::string digits = Bcd::parse(callingTlv.value());
-                _callingPartyNumber.clear();
-                for (const char d: digits)
-                {
-                    _callingPartyNumber.push_back('0' + d);
-                }
-
-                _isCallingPartyExist = true;
-            }
-
+            _callingPartyNumber = Bcd::parse(callingTlv.value());
             _isCallingPartyExist = true;
         }
     }

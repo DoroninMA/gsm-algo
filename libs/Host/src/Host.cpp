@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+#include <bits/regex_constants.h>
 #include <Host/Host.h>
 
 #include "Network/Level3/CcMessage/ConnectAck.h"
@@ -10,6 +11,7 @@
 #include "Network/Level3/L3MessageFactory.h"
 #include "Network/Level3/CcMessage/ReleaseCompleteMessage.h"
 #include "Network/Level3/CcMessage/ReleaseMessage.h"
+#include "Network/Level3/MmMessage/CipherModeComplete.h"
 #include "Network/Level3/MmMessage/LocationUpdateAccept.h"
 #include "Network/Level3/MmMessage/LocationUpdateReject.h"
 
@@ -115,6 +117,8 @@ void Host::_handleLocationUpdateRequest(const GsmMessage& msg)
         throw std::runtime_error("Host: AuthGenerator not set");
     }
 
+    std::cout << "=============== LUR =============" << std::endl;
+
     const auto& lur = static_cast<const LocationUpdateRequest&>(msg);
     if (lur.lai() != _lai)
     {
@@ -123,6 +127,8 @@ void Host::_handleLocationUpdateRequest(const GsmMessage& msg)
         LocationUpdateReject rejectMsg;
         rejectMsg.setCause(static_cast<uint8_t>(GsmLurCause::LA_NOT_ALLOWED));
         _link.sendResponse(rejectMsg.pack());
+
+        std::cout << "=================================" << std::endl;
         return;
     }
 
@@ -144,6 +150,14 @@ void Host::_handleLocationUpdateRequest(const GsmMessage& msg)
     _pAuthGen->setKi(ki);
     _pAuthGen->setRand(rand);
     _pAuthGen->generateNext(_expectedSres, _kc);
+
+    std::cout << "LUR accept. " << std::endl;
+    std::cout << "Ki: " << _bytesToHexString(ki.data(), ki.size()) << std::endl;
+    std::cout << "Rand: " << _bytesToHexString(rand.data(), rand.size()) << std::endl;
+    std::cout << "XRES: " << _bytesToHexString(_expectedSres.data(), _expectedSres.size()) << std::endl;
+    std::cout << "Kc: " << _bytesToHexString(_kc.data(), _kc.size()) << std::endl;
+
+    std::cout << "=================================" << std::endl;
 
     _link.sendResponse(auth.pack());
 }
@@ -167,6 +181,7 @@ void Host::_handleAuthResponse(const GsmMessage& msg)
         return;
     }
 
+    std::cout << "LUR accept" << std::endl;
     LocationUpdateAccept acceptMsg;
     acceptMsg.setLai(lai());
     _link.sendResponse(acceptMsg.pack());
@@ -174,11 +189,26 @@ void Host::_handleAuthResponse(const GsmMessage& msg)
     CipherModeCommand cmd;
     cmd.setCipherAlgorithm(1);
     cmd.setKeySequence(_keySeq);
+
+    std::cout << "========== SEND CMC ==============" << std::endl;
+    std::cout << "ciper algorithm: " << static_cast<int>(cmd.cipherAlgorithm()) << std::endl;
+    std::cout << "key sequence: " << static_cast<int>(cmd.keySequence()) << std::endl;
+    std::cout << "=================================" << std::endl;
+
     _link.sendResponse(cmd.pack());
 }
 
-void Host::_handleCipherModeComplete(const GsmMessage&)
+void Host::_handleCipherModeComplete(const GsmMessage& msg)
 {
+    const auto& cmcMsg = static_cast<const CipherModeComplete&>(msg);
+
+    std::cout << "Cipher mode complete recv";
+    if (cmcMsg.isCryptoAlgoIdExist())
+    {
+        std::cout << ": algo id " << static_cast<int>(cmcMsg.cryptoAlgoId());
+    }
+    std::cout << std::endl;
+
     if (_pEncrypt)
     {
         _pEncrypt->setKc(_kc);

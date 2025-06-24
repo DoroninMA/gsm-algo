@@ -58,6 +58,10 @@ target_link_libraries(HostStation
         network
 )
 
+target_link_libraries(network PRIVATE
+         ioutils
+)
+
 set_target_properties(DataGenerator PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/DataGenerator"
 )

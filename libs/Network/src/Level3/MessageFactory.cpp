@@ -10,6 +10,7 @@
 #include "Network/Level3/MmMessage/AuthRequestMessage.h"
 #include "Network/Level3/MmMessage/AuthResponse.h"
 #include "Network/Level3/MmMessage/CipherModeCommand.h"
+#include "Network/Level3/MmMessage/CipherModeComplete.h"
 #include "Network/Level3/MmMessage/LocationUpdateRequest.h"
 
 
@@ -38,6 +39,9 @@ std::unique_ptr<GsmMessage> MessageFactory::parse(const std::vector<uint8_t>& da
                 break;
             case static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMMAND):
                 message = std::make_unique<CipherModeCommand>();
+                break;
+            case static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMPLETE):
+                message = std::make_unique<CipherModeComplete>();
                 break;
             case static_cast<uint8_t>(GsmMsgTypeMM::LOCATION_UPDATE_REQUEST):
                 message = std::make_unique<LocationUpdateRequest>();

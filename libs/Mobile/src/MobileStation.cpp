@@ -14,6 +14,7 @@
 #include "Network/Level3/MmMessage/CipherModeComplete.h"
 #include "Network/Level3/MmMessage/LocationUpdateRequest.h"
 
+#include "IOUtils/Utils.h"
 
 MobileStation::MobileStation(RadioLink& link, const MobileIdentity& imsi, const std::vector<uint8_t>& ki)
     : _link(link), _imsi(imsi), _ki(ki), _state(State::DISCONNECTED),
@@ -96,6 +97,7 @@ void MobileStation::_handleAuthRequest(const GsmMessage& msg)
     }
 
     const auto& authReq = static_cast<const AuthRequestMessage&>(msg);
+    std::cout << "LUR Response. Rand: " << _bytesToHexString(authReq.rand().data(), authReq.rand().size()) << std::endl;
     _sendAuthResponse(authReq.rand());
     _state = State::CIPHERING;
 }
@@ -111,6 +113,13 @@ void MobileStation::_sendAuthResponse(const std::vector<uint8_t>& rand)
     _pAuthGenerator->setKi(_ki);
     _pAuthGenerator->setRand(rand);
     _pAuthGenerator->generateNext(sres, _kc);
+
+    std::cout << "====== AuthResponseMessage ======" << std::endl;
+    std::cout << "ki: " << _bytesToHexString(_ki.data(), _ki.size()) << std::endl;
+    std::cout << "rand: " << _bytesToHexString(rand.data(), rand.size()) << std::endl;
+    std::cout << "sres: " << _bytesToHexString(sres.data(), sres.size()) << std::endl;
+    std::cout << "kc: " << _bytesToHexString(_kc.data(), _kc.size()) << std::endl;
+    std::cout << "=================================" << std::endl;
 
     AuthResponseMessage resp;
     resp.setSres(sres);
@@ -146,8 +155,15 @@ void MobileStation::_handleCipherModeCommand(const GsmMessage& msg)
     _pEncryptMethod->setKc(_kc);
     _pEncryptMethod->setFrameNumber(0);
 
+    std::cout << "========== RECV CMC ==============" << std::endl;
+    std::cout << "ciper algorithm: " << static_cast<int>(algoId) << std::endl;
+    std::cout << "key sequence: " << static_cast<int>(_keySeq) << std::endl;
+    std::cout << "==================================" << std::endl;
+
+    std::cout << "Send CMC response ok" << std::endl;
     // send response
     CipherModeComplete cmcResponse;
+    cmcResponse.setCryptoAlgoId(algoId);
     _link.sendRequest(cmcResponse.pack());
 
     _state = State::CALL_IDLE;

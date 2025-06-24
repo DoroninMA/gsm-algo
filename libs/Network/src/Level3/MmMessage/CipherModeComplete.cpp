@@ -3,92 +3,54 @@
 #include <iostream>
 #include <stdexcept>
 
-static constexpr uint8_t TLV_MI_TAG = 0x22; // Mobile Identity
+static constexpr uint8_t CRYPTO_ALGO_ID_NOT_SET = 0xFF;
 
-
-CipherModeComplete::CipherModeComplete() : _isMobileIdentityExist(false)
+CipherModeComplete::CipherModeComplete() : _cryptoAlgoId(CRYPTO_ALGO_ID_NOT_SET)
 {
 }
 
 uint8_t CipherModeComplete::messageType() const
 {
-    return static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMMAND);
+    return static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMPLETE);
 }
 
-bool CipherModeComplete::isMobileIdentityExist() const
+uint8_t CipherModeComplete::cryptoAlgoId() const
 {
-    return _isMobileIdentityExist;
+    return _cryptoAlgoId;
 }
 
-std::vector<uint8_t> CipherModeComplete::mobileIdentity() const
+bool CipherModeComplete::isCryptoAlgoIdExist() const
 {
-    if (_isMobileIdentityExist)
+    return _cryptoAlgoId != CRYPTO_ALGO_ID_NOT_SET;
+}
+
+std::vector<uint8_t> CipherModeComplete::pack() const
+{
+    std::cout << "CipherModeComplete::pack\n";
+    std::vector<uint8_t> out = MmMessage::pack();
+
+    if (isCryptoAlgoIdExist())
     {
-        throw std::runtime_error("CipherModeComplete: wrong mobile identity");
+        out.push_back(cryptoAlgoId());
     }
 
-    return _mobileIdentity.value();
+    return out;
 }
 
 void CipherModeComplete::parse(const std::vector<uint8_t>& data)
 {
     std::cout << "CipherModeComplete::parse\n";
 
-    size_t offset = 0;
     MmMessage::parse(data);
-    offset++;
-
-    if (offset >= data.size())
-    {
-        throw std::runtime_error("CipherModeComplete: missing message type");
-    }
-
-    uint8_t msgType = data[offset++];
-    if (msgType != messageType())
-    {
-        throw std::runtime_error("CipherModeComplete: wrong message type");
-    }
+    size_t offset = 2;
 
     if (offset < data.size())
     {
-        Tlv mi = Tlv::parse(data, offset);
-        if (mi.tag() != TLV_MOBILE_IDENTITY_TAG)
-        {
-            throw std::runtime_error("CipherModeComplete: invalid mobile identity tag");
-        }
-
-        _mobileIdentity = mi;
-        _isMobileIdentityExist = true;
-    }
-    else
-    {
-        _isMobileIdentityExist = false;
+        _cryptoAlgoId = data[offset];
     }
 }
 
-std::vector<uint8_t> CipherModeComplete::pack() const
+void CipherModeComplete::setCryptoAlgoId(uint8_t cryptoAlgoId)
 {
-    std::cout << "CipherModeComplete::pack\n";
-
-    std::vector<uint8_t> out = MmMessage::pack();
-    out.push_back(messageType());
-
-    if (_isMobileIdentityExist)
-    {
-        std::vector<uint8_t> miPacked = _mobileIdentity.pack();
-        out.insert(out.end(), miPacked.begin(), miPacked.end());
-    }
-
-    return out;
-}
-
-void CipherModeComplete::setMobileIdentity(const std::vector<uint8_t>& mi)
-{
-    if (mi.empty())
-    {
-        throw std::invalid_argument("CipherModeCommand: Mobile Identity cannot be empty");
-    }
-
-    _mobileIdentity = Tlv(TLV_MI_TAG, mi);
-    _isMobileIdentityExist = true;
+    _cryptoAlgoId = cryptoAlgoId;
 }
