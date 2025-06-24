@@ -5,6 +5,9 @@
 #include <Network/Level3/MmMessage/LocationUpdateAccept.h>
 #include <Network/Level3/MmMessage/LocationUpdateReject.h>
 
+#include <Network/Level3/CcMessage/ConnectAck.h>
+
+#include "Network/Level2/VoiceMessage.h"
 #include "Network/Level3/CcMessage/SetupMessage.h"
 
 #include "Network/Level3/MmMessage/AuthRequestMessage.h"
@@ -63,9 +66,15 @@ std::unique_ptr<GsmMessage> MessageFactory::parse(const std::vector<uint8_t>& da
             case static_cast<uint8_t>(GsmMsgTypeCC::SETUP):
                 message = std::make_unique<SetupMessage>();
                 break;
+            case static_cast<uint8_t>(GsmMsgTypeCC::CONNECT_ACK):
+                message = std::make_unique<ConnectAck>();
+                break;
             default:
                 throw std::runtime_error("MessageFactory: Unknown CC message type");
             }
+            break;
+        case static_cast<uint8_t>(GsmMessagePD::TRAFIC_CHANNEL):
+            message = std::make_unique<VoiceMessage>();
             break;
 
         default:

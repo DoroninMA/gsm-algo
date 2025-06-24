@@ -9,8 +9,6 @@ enum class GsmMsgTypeCC : uint8_t
     CONNECT_ACK = 0x0F,
     RELEASE = 0x4C,
     RELEASE_COMPLETE = 0x2A,
-
-    VOICE_FRAME = 0x3F,
 };
 
 enum class GsmMsgTypeMM : uint8_t
@@ -31,7 +29,8 @@ enum class GsmMessagePD : uint8_t
     NONE = 0x00,
     CALL_CONTROL = 0x01,
     MOBILITY_MANAGEMENT = 0x02,
-    RADIO_RESOURCE_MANAGEMENT = 0x06
+    RADIO_RESOURCE_MANAGEMENT = 0x06,
+    TRAFIC_CHANNEL = 0xFF,
 };
 
 enum class GsmLurCause : uint8_t

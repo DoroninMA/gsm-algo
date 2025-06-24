@@ -15,6 +15,7 @@ endif()
 
 file(GLOB mobile_src CONFIGURE_DEPENDS
     "src/*.cpp"
+    "src/Level2/*.cpp"
     "src/Level3/*.cpp"
     "src/Level3/CcMessage/*.cpp"
     "src/Level3/MmMessage/*.cpp"

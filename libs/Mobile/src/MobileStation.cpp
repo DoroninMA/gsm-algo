@@ -15,6 +15,7 @@
 #include "Network/Level3/MmMessage/LocationUpdateRequest.h"
 
 #include "IOUtils/Utils.h"
+#include "Network/Level2/VoiceMessage.h"
 
 MobileStation::MobileStation(RadioLink& link, const MobileIdentity& imsi, const std::vector<uint8_t>& ki)
     : _link(link), _imsi(imsi), _ki(ki), _state(State::DISCONNECTED),
@@ -32,28 +33,32 @@ MobileStation::MobileStation(RadioLink& link, const MobileIdentity& imsi, const 
         try
         {
             std::unique_ptr<GsmMessage> msg = std::move(MessageFactory::parse(raw));
-            switch (msg->messageType())
+            if (msg->protocolDiscriminator() == GsmMessagePD::TRAFIC_CHANNEL)
             {
-                case static_cast<uint8_t>(GsmMsgTypeMM::AUTH_REQUEST):
-                    _handleAuthRequest(*msg);
-                    break;
-                case static_cast<uint8_t>(GsmMsgTypeMM::LOCATION_UPDATE_REJECT):
-                    _handleAuthReject(*msg);
-                    break;
-                case static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMMAND):
-                    _handleCipherModeCommand(*msg);
-                    break;
-                // case static_cast<uint8_t>(GsmMsgTypeMM::SETUP):
-                //     _handleSetup(*msg);
-                //     break;
-                case static_cast<uint8_t>(GsmMsgTypeCC::CONNECT_ACK):
-                    _handleConnectAcknowledge(*msg);
-                    break;
-                case static_cast<uint8_t>(GsmMsgTypeCC::VOICE_FRAME):
-                    _handleVoiceFrame(*msg);
-                    break;
-                default:
-                    break;
+                _handleVoiceFrame(*msg);
+            }
+            else
+            {
+                switch (msg->messageType())
+                {
+                    case static_cast<uint8_t>(GsmMsgTypeMM::AUTH_REQUEST):
+                        _handleAuthRequest(*msg);
+                        break;
+                    case static_cast<uint8_t>(GsmMsgTypeMM::LOCATION_UPDATE_REJECT):
+                        _handleAuthReject(*msg);
+                        break;
+                    case static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMMAND):
+                        _handleCipherModeCommand(*msg);
+                        break;
+                    // case static_cast<uint8_t>(GsmMsgTypeMM::SETUP):
+                    //     _handleSetup(*msg);
+                    //     break;
+                    case static_cast<uint8_t>(GsmMsgTypeCC::CONNECT_ACK):
+                        _handleConnectAcknowledge(*msg);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
         catch (const std::exception& ex)
@@ -250,9 +255,10 @@ void MobileStation::_handleVoiceFrame(const GsmMessage& msg)
         throw std::runtime_error("MobileStation: No encryption method set");
     }
 
+    auto& voice = static_cast<const VoiceMessage&>(msg);
+
     // decode message
-    std::vector<uint8_t> encrypted = msg.pack();
-    std::vector<uint8_t> decrypted = _pEncryptMethod->decrypt(encrypted);
+    std::vector<uint8_t> decrypted = _pEncryptMethod->decrypt(voice.voiceData());
     _pEncryptMethod->setFrameNumber(_pEncryptMethod->frameNumber() + 1);
 
     if (_voiceCb)

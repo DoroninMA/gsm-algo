@@ -3,6 +3,7 @@
 #include <bits/regex_constants.h>
 #include <Host/Host.h>
 
+#include "Network/Level2/VoiceMessage.h"
 #include "Network/Level3/CcMessage/ConnectAck.h"
 #include "Network/Level3/MmMessage/AuthRequestMessage.h"
 #include "Network/Level3/MmMessage/AuthResponse.h"
@@ -44,29 +45,33 @@ Host::Host(RadioLink& link) : _link(link)
             std::cout << "received: " << debugMessage << std::endl;
 
             std::unique_ptr<GsmMessage> msg = MessageFactory::parse(data);
-            switch (msg->messageType())
+            if (msg->protocolDiscriminator() == GsmMessagePD::TRAFIC_CHANNEL)
             {
-                case static_cast<uint8_t>(GsmMsgTypeMM::LOCATION_UPDATE_REQUEST):
-                    _handleLocationUpdateRequest(*msg);
-                    break;
-                case static_cast<uint8_t>(GsmMsgTypeMM::AUTH_RESPONSE):
-                    _handleAuthResponse(*msg);
-                    break;
-                case static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMPLETE):
-                    _handleCipherModeComplete(*msg);
-                    break;
-                case static_cast<uint8_t>(GsmMsgTypeCC::SETUP):
-                    _handleSetup(*msg);
-                    break;
-                case static_cast<uint8_t>(GsmMsgTypeCC::RELEASE):
-                    _handleRelease(*msg);
-                    break;
-                case static_cast<uint8_t>(GsmMsgTypeCC::VOICE_FRAME):
-                    _handleVoiceFrame(*msg);
-                    break;
-                default:
-                    std::cerr << "Host: unknown message type received\n";
-                    break;
+                _handleVoiceFrame(*msg);
+            }
+            else
+            {
+                switch (msg->messageType())
+                {
+                    case static_cast<uint8_t>(GsmMsgTypeMM::LOCATION_UPDATE_REQUEST):
+                        _handleLocationUpdateRequest(*msg);
+                        break;
+                    case static_cast<uint8_t>(GsmMsgTypeMM::AUTH_RESPONSE):
+                        _handleAuthResponse(*msg);
+                        break;
+                    case static_cast<uint8_t>(GsmMsgTypeMM::CIPHER_MODE_COMPLETE):
+                        _handleCipherModeComplete(*msg);
+                        break;
+                    case static_cast<uint8_t>(GsmMsgTypeCC::SETUP):
+                        _handleSetup(*msg);
+                        break;
+                    case static_cast<uint8_t>(GsmMsgTypeCC::RELEASE):
+                        _handleRelease(*msg);
+                        break;
+                    default:
+                        std::cerr << "Host: unknown message type received\n";
+                        break;
+                }
             }
         }
         catch (const std::exception& ex)
@@ -244,8 +249,9 @@ void Host::_handleVoiceFrame(const GsmMessage& msg)
         return;
     }
 
-    const std::vector<uint8_t>& encrypted = msg.pack();
-    const std::vector<uint8_t> decrypted = _pEncrypt->decrypt(encrypted);
+    auto& voice = static_cast<const VoiceMessage&>(msg);
+
+    const std::vector<uint8_t> decrypted = _pEncrypt->decrypt(voice.voiceData());
     _pEncrypt->setFrameNumber(_pEncrypt->frameNumber() + 1);
 
     if (_voiceCb)
