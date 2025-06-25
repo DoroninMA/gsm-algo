@@ -35,6 +35,13 @@ std::vector<uint8_t> EncryptMethod::decrypt(const std::vector<uint8_t>& data)
     return _process(data, Direction::Downlink);
 }
 
+void EncryptMethod::reset()
+{
+    _frameNumber = 0;
+    _decBitKeystreamBuf.clear();
+    _encBitKeystreamBuf.clear();
+}
+
 std::vector<uint8_t> EncryptMethod::_process(const std::vector<uint8_t>& data, Direction dir)
 {
     std::vector<uint8_t>& bitBuf = (dir == Direction::Uplink) ? _encBitKeystreamBuf : _decBitKeystreamBuf;
@@ -47,10 +54,10 @@ std::vector<uint8_t> EncryptMethod::_process(const std::vector<uint8_t>& data, D
         std::array<uint8_t, 114> decrypt, encrypt;
         _generateKeyStream(_kc.data(), _frameNumber++, decrypt.data(), encrypt.data());
 
-        std::cout << "DEBUG EncryptMethod" << std::endl;
-        std::cout << _bytesToHexString(decrypt.data(), decrypt.size()) << std::endl;
-        std::cout << _bytesToHexString(encrypt.data(), encrypt.size()) << std::endl;
-        std::cout << "END DEBUG EncryptMethod" << std::endl;
+        // std::cout << "DEBUG EncryptMethod" << std::endl;
+        // std::cout << _bytesToHexString(decrypt.data(), decrypt.size()) << std::endl;
+        // std::cout << _bytesToHexString(encrypt.data(), encrypt.size()) << std::endl;
+        // std::cout << "END DEBUG EncryptMethod" << std::endl;
 
         if (dir == Direction::Uplink)
         {

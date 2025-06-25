@@ -31,6 +31,10 @@ public:
     State state() const { return _state; }
     const std::vector<uint8_t>& lai() const;
 
+    int alogId() const;
+    int authId() const;
+    const std::vector<uint8_t>& kc() const;
+    const std::vector<uint8_t>& rand() const;
 
     void connectToBts();
     void disconnectFromBts();

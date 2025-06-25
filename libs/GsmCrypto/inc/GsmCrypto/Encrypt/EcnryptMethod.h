@@ -18,6 +18,8 @@ public:
     std::vector<uint8_t> encrypt(const std::vector<uint8_t>& data);
     std::vector<uint8_t> decrypt(const std::vector<uint8_t>& data);
 
+    void reset();
+
 protected:
     virtual void _generateKeyStream(const uint8_t* key, uint32_t frameNumber, uint8_t* decBits, uint8_t* encBits) = 0;
 

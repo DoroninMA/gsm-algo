@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTimer>
 
 #include <memory>
 #include <thread>
@@ -26,6 +27,12 @@ public:
 private:
     Ui::MainWindow *ui;
 
+    QTimer* _tmr = nullptr;
+    std::vector<uint8_t> _kc;
+    std::vector<uint8_t> _rand;
+    int _cryptAlgoNum = 0;
+    int _authId = 0;
+
     std::vector<uint8_t> _ki;
     MobileIdentity _mobileId;
 
@@ -49,6 +56,8 @@ private:
 private slots:
     void connectBtnActivated();
     void sendMessage();
+
+    void checkUpdateMobile();
 };
 
 #endif // MAINWINDOW_H

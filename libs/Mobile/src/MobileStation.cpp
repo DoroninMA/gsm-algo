@@ -4,6 +4,13 @@
 #include <stdexcept>
 #include <utility>
 
+#include <GsmCrypto/Encrypt/EcnryptA51.h>
+#include <GsmCrypto/Encrypt/EcnryptA52.h>
+
+#include <GsmCrypto/Auth/AuthComp1281.h>
+#include <GsmCrypto/Auth/AuthComp1282.h>
+#include <GsmCrypto/Auth/AuthComp1283.h>
+
 #include "GsmCrypto/Encrypt/EncryptMethodFactory.h"
 #include "Network/Level3/L3MessageFactory.h"
 #include "Network/Level3/CcMessage/ReleaseMessage.h"
@@ -71,6 +78,64 @@ MobileStation::MobileStation(RadioLink& link, const MobileIdentity& imsi, const 
 const std::vector<uint8_t>& MobileStation::lai() const
 {
     return _lai;
+}
+
+int MobileStation::alogId() const
+{
+    if (_pEncryptMethod)
+    {
+        if (dynamic_cast<EncryptA51*>(_pEncryptMethod.get()))
+        {
+            return 1;
+        }
+
+        if (dynamic_cast<EncryptA52*>(_pEncryptMethod.get()))
+        {
+            return 2;
+        }
+    }
+
+    return 0;
+}
+
+int MobileStation::authId() const
+{
+    if (_pAuthGenerator)
+    {
+        if (dynamic_cast<Comp1281*>(_pAuthGenerator.get()))
+        {
+            return 1;
+        }
+
+        if (dynamic_cast<Comp1282*>(_pAuthGenerator.get()))
+        {
+            return 2;
+        }
+
+        if (dynamic_cast<Comp1283*>(_pAuthGenerator.get()))
+        {
+            return 3;
+        }
+    }
+
+    return 0;
+}
+
+const std::vector<uint8_t> &MobileStation::kc() const
+{
+    return _kc;
+}
+
+const std::vector<uint8_t> &MobileStation::rand() const
+{
+    static std::vector<uint8_t> emptyRand{};
+
+    if (_pAuthGenerator)
+    {
+        return _pAuthGenerator->rand();
+    }
+
+    return emptyRand;
 }
 
 void MobileStation::connectToBts()

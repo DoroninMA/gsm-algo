@@ -5,6 +5,8 @@
 
 #include <GsmCrypto/Auth/AuthComp1281.h>
 
+#include <IOUtils/Utils.h>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -34,27 +36,6 @@ void MainWindow::_init()
     _pTransport = std::move(socket);
     _pRadioLink = std::make_unique<RadioLink>(_pTransport);
 
-    // _pRadioLink->setReceiveHandler(
-    //     [](std::error_code ec, size_t bytes, const std::vector<uint8_t>& data, const std::string& addr, uint16_t port)
-    //     {
-    //         try {
-    //             if (!ec)
-    //             {
-    //                 std::cout << "Received " << bytes << " bytes from " << addr << ":" << port << "\n";
-    //             }
-    //             else
-    //             {
-    //                 std::cerr << "Receive error: " << ec.message() << "\n";
-    //             }
-    //         }
-    //         catch(const std::exception& e) {
-    //             std::cerr << "Exception in receive handler: " << e.what() << std::endl;
-    //         }
-    //         catch(...) {
-    //             std::cerr << "Unknown exception in receive handler\n";
-    //         }
-    //     });
-
 
     _pTransport->asyncReceive();
     _ioThread = std::thread([this]() {
@@ -71,6 +52,11 @@ void MainWindow::_init()
     connect(ui->identityLabelData, &QLineEdit::returnPressed, this, [this](){
         this->setImsi(ui->identityLabelData->text().toStdString());
     });
+
+
+    _tmr = new QTimer(this);
+    connect(_tmr, &QTimer::timeout, this, &MainWindow::checkUpdateMobile);
+    _tmr->start(50);
 }
 
 void MainWindow::setImsi(const std::string &imsi)
@@ -161,13 +147,57 @@ void MainWindow::sendMessage()
         try
         {
             _pMobileStation->sendVoiceData(message.toStdString());
-            ui->messageTextEdit->append("Отправлено: " + message);
+            ui->messageTextEdit->append("Отправлено: " + message + "\n");
             ui->sendLineEdit->clear();
         }
         catch(const std::exception& e)
         {
             std::cerr << e.what();
 
+        }
+    }
+}
+
+void MainWindow::checkUpdateMobile()
+{
+    if (_pMobileStation)
+    {
+        if (_pMobileStation->kc() != _kc)
+        {
+            _kc = _pMobileStation->kc();
+            ui->kcLabelData->setText(QString::fromStdString(_bytesToHexString(_kc.data(), _kc.size())));
+        }
+
+        if (_pMobileStation->rand() != _rand)
+        {
+            _rand = _pMobileStation->rand();
+            ui->randLabelData->setText(QString::fromStdString(_bytesToHexString(_rand.data(), _rand.size())));
+        }
+
+        if (_pMobileStation->alogId() != _cryptAlgoNum)
+        {
+            _cryptAlgoNum = _pMobileStation->alogId();
+            if (_cryptAlgoNum == 0)
+            {
+                ui->cryptoLabelData->setText("");
+            }
+            else
+            {
+                ui->cryptoLabelData->setText(QString::number(_cryptAlgoNum));
+            }
+        }
+
+        if (_pMobileStation->authId() != _authId)
+        {
+            _authId = _pMobileStation->authId();
+            if (_authId == 0)
+            {
+                ui->authDataLabel->setText("");
+            }
+            else
+            {
+                ui->authDataLabel->setText(QString::number(_authId));
+            }
         }
     }
 }
