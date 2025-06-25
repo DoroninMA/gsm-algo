@@ -22,6 +22,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::_init()
 {
+    _dualStreamBuf = DualStreamBuf(std::cout.rdbuf(), ui->messageTextEdit);
+    std::cout.rdbuf(&_dualStreamBuf);
+
     _mobileId.setType(MobileIdentity::Type::IMSI);
     setImsi("001010123456789");
     setKi("");

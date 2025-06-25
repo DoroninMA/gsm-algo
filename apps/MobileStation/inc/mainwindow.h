@@ -9,6 +9,8 @@
 #include <Mobile/MobileStation.h>
 #include <Network/UdpSocket.h>
 
+#include "DualStreamBuf.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -34,6 +36,8 @@ private:
     std::unique_ptr<MobileStation> _pMobileStation;
 
     std::thread _ioThread;
+
+    DualStreamBuf _dualStreamBuf;
 
     bool _isConnected = false;
 

@@ -24,6 +24,8 @@ qt_standard_project_setup()
 qt_add_executable(${PROJECT_NAME}
     src/main.cpp
     src/mainwindow.cpp
+    src/DualStreamBuf.cpp
+
 
     inc/mainwindow.h
     ui/mainwindow.ui

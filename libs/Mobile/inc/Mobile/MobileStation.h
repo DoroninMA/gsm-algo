@@ -31,6 +31,7 @@ public:
     State state() const { return _state; }
     const std::vector<uint8_t>& lai() const;
 
+
     void connectToBts();
     void disconnectFromBts();
     void sendVoiceData(const VoiceFrame& speech);
